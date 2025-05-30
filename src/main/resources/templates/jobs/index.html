@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head><title>Daftar Lowongan</title></head>
+<body>
+<h1>Lowongan Kerja</h1>
+<a th:href="@{/jobs/new}">+ Tambah Lowongan</a>
+<table>
+    <tr><th>Judul</th><th>Lokasi</th><th>Aksi</th></tr>
+    <tr th:each="job : ${jobs}">
+        <td th:text="${job.title}">Judul</td>
+        <td th:text="${job.location}">Lokasi</td>
+        <td>
+            <a th:href="@{/jobs/edit/{id}(id=${job.id})}">Edit</a>
+            <a th:href="@{/jobs/delete/{id}(id=${job.id})}" onclick="return confirm('Hapus?')">Hapus</a>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
