@@ -32,6 +32,9 @@
             <div class="text-center">
                 <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
             </div>
+            <div th:if="${param.logout}">
+                <p>Anda telah berhasil logout.</p>
+            </div>
             <div th:if="${error}" style="color: red; margin-bottom: 10px;">
                 <p th:text="${error}"></p>
             </div>

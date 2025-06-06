@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,6 +35,10 @@ public class AuthController {
     }
     @GetMapping("/login")
     public String login(Model model) {
+        if (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
+                && !(SecurityContextHolder.getContext().getAuthentication() instanceof AnonymousAuthenticationToken)) {
+            return "redirect:/dashboard";
+        }
         model.addAttribute("loginRequest", new LoginRequest());
         return "auth/login";
     }
@@ -55,8 +60,6 @@ public class AuthController {
             User user = userData.get();
 
             if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                session.setAttribute("user", user);
-
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
                                 user.getUsername(),
@@ -73,5 +76,12 @@ public class AuthController {
 
         model.addAttribute("error", "Username atau password salah");
         return "auth/login";
+    }
+
+    @PostMapping("/logout")
+    public String logout(HttpSession httpSession) {
+        SecurityContextHolder.clearContext();
+        httpSession.invalidate();
+        return "redirect:/login?logout";
     }
 }
