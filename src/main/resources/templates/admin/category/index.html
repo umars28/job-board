@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{admin/fragments/app :: app(~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">List Job Category</h1>
+            <button class="btn btn-success" id="btnAddCategory" data-toggle="modal" data-target="#createCategoryModal">Create Category</button>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+                    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+                    <table class="table" id="categoryDataTable" width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Name</th>
+                            <th>Total Jobs</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="category, iterStat : ${listJobCategory}">
+                            <td th:text="${iterStat.index + 1}">1</td>
+                            <td th:text="${category.name}">Category Name</td>
+                            <td th:text="${#lists.size(category.jobs)}">0</td>
+                            <td>
+                                <button
+                                        class="btn btn-sm btn-primary btnEditCategory"
+                                        th:attr="data-id=${category.id}, data-name=${category.name}">
+                                    Edit
+                                </button>
+                                <a th:href="@{'/jobs/category/delete/' + ${category.id}}"
+                                   onclick="return confirm('Yakin ingin menghapus kategori ini?');"
+                                   class="btn btn-danger btn-sm">
+                                    Delete
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div th:insert="~{admin/modals/category-modals :: createCategoryModal(${openCreateModal})}"></div>
+        <div th:insert="~{admin/modals/category-modals :: editCategoryModal(${openEditModal}, ${categoryRequest})}"></div>
+
+    </div>
+</div>
+</body>
+</html>

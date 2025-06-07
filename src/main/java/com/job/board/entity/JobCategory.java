@@ -14,6 +14,11 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class JobCategory {
+
+    public JobCategory(String name) {
+        this.name = name;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
