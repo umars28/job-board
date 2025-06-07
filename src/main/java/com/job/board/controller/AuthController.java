@@ -3,6 +3,7 @@ package com.job.board.controller;
 import com.job.board.entity.User;
 import com.job.board.model.LoginRequest;
 import com.job.board.repository.UserRepository;
+import com.job.board.service.AuthService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -26,13 +27,12 @@ import java.util.Optional;
 public class AuthController {
     private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
-    private final PasswordEncoder passwordEncoder;
-    private UserRepository userRepository;
+    private final AuthService authService;
 
-    public AuthController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
     }
+
     @GetMapping("/login")
     public String login(Model model) {
         if (SecurityContextHolder.getContext().getAuthentication().isAuthenticated()
@@ -55,23 +55,10 @@ public class AuthController {
             return "auth/login";
         }
 
-        Optional<User> userData = userRepository.findByUsername(loginRequest.getUsername());
-        if (userData.isPresent()) {
-            User user = userData.get();
+        boolean success = authService.login(loginRequest, session);
 
-            if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                user.getUsername(),
-                                null,
-                                List.of(new SimpleGrantedAuthority("ROLE_USER"))
-                        );
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-                session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
-
-                return "redirect:/dashboard";
-            }
+        if (success) {
+            return "redirect:/dashboard";
         }
 
         model.addAttribute("error", "Username atau password salah");
@@ -80,8 +67,7 @@ public class AuthController {
 
     @PostMapping("/logout")
     public String logout(HttpSession httpSession) {
-        SecurityContextHolder.clearContext();
-        httpSession.invalidate();
+        authService.logout(httpSession);
         return "redirect:/login?logout";
     }
 }

@@ -1,6 +1,7 @@
 package com.job.board.controller;
 
 import com.job.board.entity.User;
+import com.job.board.enums.Role;
 import com.job.board.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -26,8 +27,10 @@ public class DevSeederController {
         if (userRepository.findByUsername("admin").isEmpty()) {
             User admin = new User();
             admin.setFirstName("Umar");
+            admin.setEmail("umarsabirin369@gmail.com");
             admin.setLastName("Sabirin");
             admin.setUsername("admin");
+            admin.setRole(Role.ADMIN);
             admin.setPassword(passwordEncoder.encode("passwordsecret"));
 
             userRepository.save(admin);

@@ -1,13 +1,14 @@
 package com.job.board.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import jdk.jfr.Category;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,4 +23,19 @@ public class Job {
     private String title;
     private String description;
     private String location;
+    private LocalDateTime postedAt;
+
+    @ManyToOne
+    private Company company;
+
+    @ManyToOne
+    private JobCategory category;
+
+    @ManyToMany
+    @JoinTable(
+            name = "job_tags",
+            joinColumns = @JoinColumn(name = "job_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id")
+    )
+    private List<JobTag> tags;
 }

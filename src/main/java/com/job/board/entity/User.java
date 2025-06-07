@@ -1,9 +1,7 @@
 package com.job.board.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.job.board.enums.Role;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,7 +21,18 @@ public class User {
 
     private String firstName;
 
+    private String email;
+
     private String lastName;
 
     private String password;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @OneToOne(mappedBy = "user")
+    private Company company;
+
+    @OneToOne(mappedBy = "user")
+    private JobSeeker jobSeeker;
 }
