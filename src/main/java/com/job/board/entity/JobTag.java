@@ -14,6 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 public class JobTag {
+
+    public JobTag(String name) {
+        this.name = name;
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

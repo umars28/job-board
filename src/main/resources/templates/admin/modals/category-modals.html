@@ -12,6 +12,7 @@
 
     <div class="modal-dialog" role="document">
         <form th:action="@{/jobs/category/save}" method="post" th:object="${categoryRequest}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title">Category</h5>
@@ -48,6 +49,7 @@
 
     <div class="modal-dialog" role="document">
         <form th:action="@{/jobs/category/update}" method="post" th:object="${categoryRequest}">
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editCategoryModalLabel">Edit Kategori</h5>

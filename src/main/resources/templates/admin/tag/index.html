@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{admin/fragments/app :: app(~{::content})}">
+    <div th:fragment="content">
+
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Manage Job Tags</h1>
+            <button class="btn btn-success" id="btnAddTag">Create Tag</button>
+        </div>
+
+        <div class="row">
+            <!-- LEFT: List of Tags -->
+            <div class="col-md-8">
+                <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+                <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+                <div class="card shadow mb-4">
+
+                    <div class="card-header py-3 d-flex justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">List Tags</h6>
+                    </div>
+                    <div class="card-body">
+                        <table class="table" id="tagDataTable">
+                            <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Tag Name</th>
+                                <th>Total Jobs</th>
+                                <th style="width: 100px;">Action</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="tag, iterStat : ${jobTagList}">
+                                <td th:text="${iterStat.index + 1}">1</td>
+                                <td th:text="${tag.name}">Tag Name</td>
+                                <td th:text="${#lists.size(tag.jobs)}">0</td>
+                                <td>
+                                    <button
+                                            class="btn btn-sm btn-primary btnEditTag"
+                                            th:attr="data-id=${tag.id}, data-name=${tag.name}">
+                                        Edit
+                                    </button>
+                                    <a th:href="@{'/jobs/tag/delete/' + ${tag.id}}"
+                                       onclick="return confirm('Yakin ingin menghapus tag ini?');"
+                                       class="btn btn-danger btn-sm">
+                                        Delete
+                                    </a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Create/Edit Form -->
+            <div class="col-md-4">
+                <div class="card shadow mb-4">
+                    <div class="card-header form-tag py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Create Tag</h6>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/jobs/tag/save}" method="post" th:object="${tagRequest}">
+                            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+                            <input type="hidden" id="editTagId" th:field="*{id}" />
+
+                            <div class="form-group">
+                                <label for="name">Tag Name</label>
+                                <input type="text"
+                                       id="name"
+                                       th:field="*{name}"
+                                       class="form-control"
+                                       placeholder="Enter tag name"
+                                       required minlength="2">
+                                <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error</div>
+                            </div>
+                            <button type="submit" class="btn btn-success btn-block">Create Tag</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+</body>
+</html>
