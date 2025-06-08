@@ -1,5 +1,6 @@
 package com.job.board.entity;
 
+import com.job.board.enums.JobStatus;
 import jakarta.persistence.*;
 import jdk.jfr.Category;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,11 @@ public class Job {
     private String description;
     private String location;
     private LocalDateTime postedAt;
+
+    @Enumerated(EnumType.STRING)
+    private JobStatus status;
+
+    private LocalDateTime expiredAt;
 
     @ManyToOne
     private Company company;
