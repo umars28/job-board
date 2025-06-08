@@ -5,8 +5,8 @@
     <div th:fragment="content">
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">List Seeker</h1>
-            <a th:href="@{/users/seeker/create}" class="btn btn-success">Create Seeker</a>
+            <h1 class="h3 mb-0 text-gray-800">List Company</h1>
+            <a th:href="@{/users/company/create}" class="btn btn-success">Create Company</a>
         </div>
 
         <div class="card shadow mb-4">
@@ -15,27 +15,29 @@
                     <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
                     <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
 
-                    <table class="table" id="seekerDataTable">
+                    <table class="table" id="companyDataTable">
                         <thead>
                         <tr>
                             <th>No</th>
-                            <th>Full Name</th>
-                            <th>Username</th>
+                            <th>Name</th>
                             <th>Email</th>
-                            <th>Job Applied</th>
+                            <th>Address</th>
+                            <th>Website</th>
+                            <th>Job Open</th>
                             <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="seeker, iterStat : ${seekers}">
+                        <tr th:each="company, iterStat : ${company}">
                             <td th:text="${iterStat.index + 1}">1</td>
-                            <td th:text="${seeker.fullName}">Full Name</td>
-                            <td th:text="${seeker.user.username}">Username</td>
-                            <td th:text="${seeker.user.email}">Email</td>
-                            <td th:text="${seeker.applicationCount}">0</td>
+                            <td th:text="${company.name}">Name</td>
+                            <td th:text="${company.user.email}">Email</td>
+                            <td th:text="${company.address}">Address</td>
+                            <td th:text="${company.website}">Website</td>
+                            <td th:text="${#lists.size(company.jobs)}">0</td>
                             <td>
-                                <a th:href="@{/users/seeker/edit/{id}(id=${seeker.id})}" class="btn btn-primary btn-sm">Edit</a>
-                                <a th:href="@{/users/seeker/delete/{id}(id=${seeker.id})}" class="btn btn-danger btn-sm"
+                                <a th:href="@{/users/company/edit/{id}(id=${company.id})}" class="btn btn-primary btn-sm">Edit</a>
+                                <a th:href="@{/users/company/delete/{id}(id=${company.id})}" class="btn btn-danger btn-sm"
                                    onclick="return confirm('Are you sure?');">Delete</a>
                             </td>
                         </tr>

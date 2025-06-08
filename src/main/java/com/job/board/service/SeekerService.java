@@ -97,6 +97,7 @@ public class SeekerService {
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
 
+        seeker.setFullName(request.getFirstName() + " " + request.getLastName());
         seeker.setPhone(request.getPhone());
         seeker.setResumeUrl(request.getResumeUrl());
 

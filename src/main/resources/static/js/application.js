@@ -3,6 +3,7 @@ $(document).ready(function() {
     $('#categoryDataTable').DataTable();
     $('#tagDataTable').DataTable();
     $('#seekerDataTable').DataTable();
+    $('#companyDataTable').DataTable();
 
     // CATEGORY JOB MODULE
     $(document).on('click', '.btnEditCategory', function () {
