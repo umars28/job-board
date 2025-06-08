@@ -39,35 +39,18 @@
 
 
     <!-- Nav Item - Utilities -->
-    <li class="nav-item">
+    <li th:class="${requestURI.startsWith('/users')} ? 'nav-item active' : 'nav-item'">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsers"
            aria-expanded="true" aria-controls="collapseUsers">
             <i class="fas fa-fw fa-wrench"></i>
             <span>Management</span>
         </a>
-        <div id="collapseUsers" class="collapse" aria-labelledby="headingUtilities"
-             data-parent="#accordionSidebar">
+        <div id="collapseUsers" th:class="${requestURI.startsWith('/users')} ? 'collapse show' : 'collapse'">
             <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="utilities-color.html">List User</a>
-                <a class="collapse-item" href="utilities-color.html">List Company</a>
-            </div>
-        </div>
-    </li>
-
-    <!-- Nav Item - Utilities -->
-    <li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities"
-           aria-expanded="true" aria-controls="collapseUtilities">
-            <i class="fas fa-fw fa-wrench"></i>
-            <span>System Setting</span>
-        </a>
-        <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities"
-             data-parent="#accordionSidebar">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="utilities-color.html">About Us</a>
-                <a class="collapse-item" href="utilities-color.html">Terms & Conditions</a>
-                <a class="collapse-item" href="utilities-color.html">Privacy Policy</a>
-                <a class="collapse-item" href="utilities-color.html">Contact Us</a>
+                <a class="collapse-item" href="/users/seeker"
+                   th:classappend="${requestURI == '/users/seeker'} ? ' active'">List Seeker</a>
+                <a class="collapse-item" href="/users/company"
+                   th:classappend="${requestURI == '/users/company'} ? ' active'">List Company</a>
             </div>
         </div>
     </li>

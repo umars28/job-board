@@ -1,10 +1,10 @@
 // Call the dataTables jQuery plugin
 $(document).ready(function() {
-    // CATEGORY JOB MODULE
     $('#categoryDataTable').DataTable();
     $('#tagDataTable').DataTable();
+    $('#seekerDataTable').DataTable();
 
-
+    // CATEGORY JOB MODULE
     $(document).on('click', '.btnEditCategory', function () {
         const id = $(this).data('id');
         const name = $(this).data('name');

@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Setter
 @Getter
 @AllArgsConstructor
@@ -25,4 +27,11 @@ public class JobSeeker {
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "jobSeeker")
+    private List<JobApplication> jobApplications;
+
+    @Transient
+    private Long applicationCount;
+
 }

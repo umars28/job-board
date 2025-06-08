@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{admin/fragments/app :: app(~{::content})}">
+    <div th:fragment="content">
+        <h1 class="h3 mb-4 text-gray-800">Edit Seeker</h1>
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <form th:action="@{/users/seeker/update/{id}(id=${seekerId})}" method="post">
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+
+                    <div class="row">
+                        <!-- Kolom Kiri -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" class="form-control" th:value="${seeker.username}" required/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="firstName">First Name</label>
+                                <input type="text" id="firstName" name="firstName" class="form-control" th:value="${seeker.firstName}" required/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="lastName">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" class="form-control" th:value="${seeker.lastName}" required/>
+                            </div>
+                        </div>
+
+                        <!-- Kolom Kanan -->
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" class="form-control" th:value="${seeker.email}" required/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="phone">Phone (optional)</label>
+                                <input type="text" id="phone" name="phone" class="form-control" th:value="${seeker.phone}"/>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="resumeUrl">Resume URL (optional)</label>
+                                <input type="text" id="resumeUrl" name="resumeUrl" class="form-control" th:value="${seeker.resumeUrl}"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">Update Seeker</button>
+                        <a th:href="@{/users/seeker}" class="btn btn-secondary">Back</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

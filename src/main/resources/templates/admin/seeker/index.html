@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{admin/fragments/app :: app(~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">List Seeker</h1>
+            <a th:href="@{/users/seeker/create}" class="btn btn-success">Create Seeker</a>
+        </div>
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+                    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+                    <table class="table" id="seekerDataTable">
+                        <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Full Name</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Jumlah Lamaran</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="seeker, iterStat : ${seekers}">
+                            <td th:text="${iterStat.index + 1}">1</td>
+                            <td th:text="${seeker.fullName}">Full Name</td>
+                            <td th:text="${seeker.user.username}">Username</td>
+                            <td th:text="${seeker.user.email}">Email</td>
+                            <td th:text="${seeker.applicationCount}">0</td>
+                            <td>
+                                <a th:href="@{/users/seeker/edit/{id}(id=${seeker.id})}" class="btn btn-primary btn-sm">Edit</a>
+                                <a th:href="@{/users/seeker/delete/{id}(id=${seeker.id})}" class="btn btn-danger btn-sm"
+                                   onclick="return confirm('Are you sure?');">Delete</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
