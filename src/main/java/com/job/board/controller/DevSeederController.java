@@ -1,20 +1,18 @@
 package com.job.board.controller;
 
-import com.job.board.entity.JobCategory;
-import com.job.board.entity.JobTag;
-import com.job.board.entity.User;
+import com.job.board.entity.*;
+import com.job.board.enums.JobStatus;
 import com.job.board.enums.Role;
-import com.job.board.repository.JobCategoryRepository;
-import com.job.board.repository.JobTagRepository;
-import com.job.board.repository.UserRepository;
+import com.job.board.repository.*;
+import org.hibernate.mapping.Collection;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.Arrays;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Controller
 @RequestMapping("/dev-seeder")
@@ -24,12 +22,18 @@ public class DevSeederController {
     private final JobCategoryRepository jobCategoryRepository;
     private final PasswordEncoder passwordEncoder;
     private final JobTagRepository jobTagRepository;
+    private final CompanyRepository companyRepository;
+    private final SeekerRepository seekerRepository;
+    private final JobRepository jobRepository;
 
-    public DevSeederController(UserRepository userRepository, JobCategoryRepository jobCategoryRepository, PasswordEncoder passwordEncoder, JobTagRepository jobTagRepository) {
+    public DevSeederController(UserRepository userRepository, JobCategoryRepository jobCategoryRepository, PasswordEncoder passwordEncoder, JobTagRepository jobTagRepository, CompanyRepository companyRepository, SeekerRepository seekerRepository, JobRepository jobRepository) {
         this.userRepository = userRepository;
         this.jobCategoryRepository = jobCategoryRepository;
         this.passwordEncoder = passwordEncoder;
         this.jobTagRepository = jobTagRepository;
+        this.companyRepository = companyRepository;
+        this.seekerRepository = seekerRepository;
+        this.jobRepository = jobRepository;
     }
 
     @GetMapping("/seed-admin")
@@ -183,4 +187,113 @@ public class DevSeederController {
         }
         return "ℹ️ Job Tags Already Exists In The DB.";
     }
+
+    @GetMapping("/seed-company")
+    @ResponseBody
+    public String seedCompany() {
+        if (companyRepository.count() == 0) {
+            List<Company> companies = new ArrayList<>();
+            for (int i = 1; i <= 25; i++) {
+                User user = new User();
+                user.setUsername("company_user" + i);
+                user.setFirstName("First" + i);
+                user.setLastName("Last" + i);
+                user.setEmail("company" + i + "@gmail.com");
+                user.setPassword(passwordEncoder.encode("password" + i));
+                user.setRole(Role.COMPANY);
+
+                userRepository.save(user);
+
+                Company company = new Company();
+                company.setName("Company " + i);
+                company.setAddress("Address " + i);
+                company.setWebsite("https://www.company" + i + ".com");
+                company.setUser(user);
+
+                companies.add(company);
+
+            }
+            companyRepository.saveAll(companies);
+            System.out.println("✅ 25 Companies with Users seeded.");
+        }
+
+        return "ℹ️ Company Already Exists In The DB.";
+    }
+
+    @GetMapping("/seed-jobseeker")
+    @ResponseBody
+    public String seedJobSeeker() {
+        if (seekerRepository.count() == 0) {
+            List<JobSeeker> jobSeekers = new ArrayList<>();
+            for (int i = 1; i <= 25; i++) {
+                User user = new User();
+                user.setUsername("jobseeker_user" + i);
+                user.setFirstName("JSFirst" + i);
+                user.setLastName("JSLast" + i);
+                user.setEmail("jobseeker" + i + "@gmail.com");
+                user.setPassword(passwordEncoder.encode("password" + i));
+                user.setRole(Role.JOB_SEEKER);
+
+                userRepository.save(user);
+
+                JobSeeker jobSeeker = new JobSeeker();
+                jobSeeker.setFullName("Job Seeker " + i);
+                jobSeeker.setPhone("0812345678" + i);
+                jobSeeker.setResumeUrl("https://drive.google.com/jobseeker" + i + "/resume.pdf");
+                jobSeeker.setUser(user);
+
+                jobSeekers.add(jobSeeker);
+            }
+
+            seekerRepository.saveAll(jobSeekers);
+            System.out.println("✅ 25 JobSeekers with Users seeded.");
+            return "✅ JobSeekers Seeded Successfully.";
+        }
+
+        return "ℹ️ JobSeekers Already Exist In The DB.";
+    }
+
+    @GetMapping("/seed-job")
+    @ResponseBody
+    public String seedJobs() {
+        if (jobRepository.count() == 0) {
+            List<Company> companies = companyRepository.findAll();
+            List<JobCategory> categories = jobCategoryRepository.findAll();
+            List<JobTag> tags = jobTagRepository.findAll();
+
+            if (companies.isEmpty() || categories.isEmpty() || tags.isEmpty()) {
+                return "❌ Pastikan Company, Job Category, dan Job Tag sudah tersedia.";
+            }
+
+            List<Job> jobs = new ArrayList<>();
+            Random random = new Random();
+
+            for (int i = 1; i <= 50; i++) {
+                Job job = new Job();
+                job.setTitle("Job Title " + i);
+                job.setDescription("Job Description for job number " + i);
+                job.setLocation("City " + (random.nextInt(10) + 1));
+                job.setPostedAt(LocalDateTime.now().minusDays(random.nextInt(30)));
+                job.setExpiredAt(LocalDateTime.now().plusDays(random.nextInt(60) + 30));
+                job.setStatus(JobStatus.OPEN);
+
+                // Random Company, Category, and Tags
+                job.setCompany(companies.get(random.nextInt(companies.size())));
+                job.setCategory(categories.get(random.nextInt(categories.size())));
+
+                // Random 1–3 tags
+                Collections.shuffle(tags);
+                job.setTags(new HashSet<>(tags.subList(0, Math.min(tags.size(), random.nextInt(3) + 1))));
+
+                jobs.add(job);
+            }
+
+            jobRepository.saveAll(jobs);
+            System.out.println("✅ 50 Jobs seeded successfully.");
+            return "✅ 50 Jobs Seeded Successfully.";
+        }
+
+        return "ℹ️ Jobs Already Exist In The DB.";
+    }
+
 }

@@ -27,8 +27,8 @@
         </a>
         <div id="collapseTwo" th:class="${requestURI.startsWith('/jobs')} ? 'collapse show' : 'collapse'">
         <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/jobs"
-                   th:classappend="${requestURI == '/jobs'} ? ' active'">List Job</a>
+                <a class="collapse-item" href="/jobs/list"
+                   th:classappend="${requestURI == '/jobs/list'} ? ' active'">List Job</a>
                 <a class="collapse-item" href="/jobs/category"
                    th:classappend="${requestURI == '/jobs/category'} ? ' active'">Category</a>
                 <a class="collapse-item" href="/jobs/tag"

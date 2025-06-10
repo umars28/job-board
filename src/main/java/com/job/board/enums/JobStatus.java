@@ -6,6 +6,7 @@ public enum JobStatus {
     FILLED,
     CANCELLED,
     PAUSED,
-    DRAFT
+    DRAFT,
+    ARCHIVED
 }
 

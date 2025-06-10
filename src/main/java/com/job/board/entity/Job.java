@@ -10,6 +10,7 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -43,5 +44,9 @@ public class Job {
             joinColumns = @JoinColumn(name = "job_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id")
     )
-    private List<JobTag> tags;
+    private Set<JobTag> tags;
+
+    @OneToMany(mappedBy = "job")
+    private List<JobApplication> jobApplications;
+
 }

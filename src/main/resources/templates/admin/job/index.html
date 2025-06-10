@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{admin/fragments/app :: app(~{::content})}">
+    <div th:fragment="content">
+        <!-- Page Heading -->
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">List Job</h1>
+<!--            <a th:href="@{/jobs/create}" class="btn btn-success">Create Job</a>-->
+        </div>
+
+        <a th:href="@{/jobs/list}"
+           class="btn btn-outline-primary btn-sm"
+           th:classappend="${selectedStatus} == null ? ' active' : ''">
+            All
+        </a>
+
+        <a th:each="s : ${statuses}"
+           th:href="@{/jobs/list(status=${s.name()})}"
+           th:text="${s.name()}"
+           class="btn btn-outline-primary btn-sm"
+           th:classappend="${selectedStatus} == ${s.name()} ? ' active' : ''">
+        </a>
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+                    <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
+                    <table class="table table-bordered" id="jobDataTable">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Title</th>
+                            <th>Company</th>
+                            <th>Category</th>
+                            <th>Tags</th>
+                            <th>Posted At</th>
+                            <th>Expired At</th>
+                            <th>Applied</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="job, iter : ${jobs}">
+                            <td th:text="${iter.index + 1}">1</td>
+                            <td th:text="${job.title}">Title</td>
+                            <td th:text="${job.company.name}">Company</td>
+                            <td th:text="${job.category.name}">Category</td>
+                            <td>
+                                <span th:each="tag : ${job.tags}" class="badge bg-outline-primary me-1"
+                                      th:text="${tag.name}">Tag</span>
+                            </td>
+                            <td th:text="${#temporals.format(job.postedAt, 'yyyy-MM-dd')}">Posted</td>
+                            <td th:text="${#temporals.format(job.expiredAt, 'yyyy-MM-dd')}">Expired</td>
+                            <td th:text="${job.jobApplications.size()}">0</td>
+                            <td>
+                                <a th:if="${selectedStatus != 'ARCHIVED'}"
+                                   th:href="@{/jobs/archive/{id}(id=${job.id})}"
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('Archive this job?')">Archive</a>
+
+                                <a th:if="${selectedStatus == 'ARCHIVED'}"
+                                   th:href="@{/jobs/restore/{id}(id=${job.id})}"
+                                   class="btn btn-sm btn-success"
+                                   onclick="return confirm('Restore this job?')">Restore</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -4,6 +4,7 @@ $(document).ready(function() {
     $('#tagDataTable').DataTable();
     $('#seekerDataTable').DataTable();
     $('#companyDataTable').DataTable();
+    $('#jobDataTable').DataTable();
 
     // CATEGORY JOB MODULE
     $(document).on('click', '.btnEditCategory', function () {
