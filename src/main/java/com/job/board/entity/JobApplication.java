@@ -1,5 +1,6 @@
 package com.job.board.entity;
 
+import com.job.board.enums.ApplicantStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,6 +26,9 @@ public class JobApplication {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id")
     private Job job;
+
+    @Enumerated(EnumType.STRING)
+    private ApplicantStatus applicantStatus;
 
     private LocalDateTime appliedAt;
 

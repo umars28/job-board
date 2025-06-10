@@ -2,6 +2,7 @@ package com.job.board.repository;
 
 import com.job.board.entity.Company;
 import com.job.board.entity.Job;
+import com.job.board.entity.JobApplication;
 import com.job.board.enums.JobStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -24,15 +25,13 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     @Query("SELECT DISTINCT j FROM Job j " +
             "JOIN FETCH j.company " +
             "JOIN FETCH j.category " +
-            "LEFT JOIN FETCH j.tags " +
-            "LEFT JOIN FETCH j.jobApplications")
-    List<Job> findAllWithDetails();
+            "LEFT JOIN j.tags " +
+            "WHERE j.status = :status")
+    List<Job> findByStatusWithDetails(@Param("status") JobStatus status);
 
     @Query("SELECT DISTINCT j FROM Job j " +
             "JOIN FETCH j.company " +
             "JOIN FETCH j.category " +
-            "LEFT JOIN FETCH j.tags " +
-            "LEFT JOIN FETCH j.jobApplications " +
-            "WHERE j.status = :status")
-    List<Job> findByStatusWithDetails(@Param("status") JobStatus status);
+            "LEFT JOIN j.tags")
+    List<Job> findAllWithDetails();
 }

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{admin/fragments/app :: app(~{::content})}">
+    <div th:fragment="content">
+
+        <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Applicants for Job: <span th:text="${job.title}">Job Title</span></h1>
+            <a th:href="@{/jobs/list}" class="btn btn-secondary btn-sm">← Back to Jobs</a>
+        </div>
+
+        <!-- Job Details -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Job Details</h5>
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Title</dt>
+                    <dd class="col-sm-9">
+                        <a th:href="@{/jobs/edit/{id}(id=${job.id})}" th:text="${job.title}">Software Engineer</a>
+                    </dd>
+
+                    <dt class="col-sm-3">Category</dt>
+                    <dd class="col-sm-9" th:text="${job.category.name}">IT</dd>
+
+                    <dt class="col-sm-3">Company</dt>
+                    <dd class="col-sm-9" th:text="${job.company.name}">Acme Inc.</dd>
+
+                    <dt class="col-sm-3">Location</dt>
+                    <dd class="col-sm-9" th:text="${job.location}">Remote</dd>
+
+                    <dt class="col-sm-3">Posted At</dt>
+                    <dd class="col-sm-9" th:text="${#temporals.format(job.postedAt, 'yyyy-MM-dd')}">2024-06-01</dd>
+                </dl>
+            </div>
+        </div>
+
+
+        <a th:href="@{/job-applications/list}"
+           class="btn btn-outline-primary btn-sm"
+           th:classappend="${selectedStatus} == null ? ' active' : ''">
+            All
+        </a>
+
+        <a th:each="status : ${statuses}"
+           th:href="@{/job-applications/list(status=${status.name()})}"
+           th:text="${status.name()}"
+           class="btn btn-outline-primary btn-sm"
+           th:classappend="${selectedStatus} == ${status.name()} ? ' active' : ''">
+        </a>
+
+
+        <div class="card shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <div th:if="${applications.empty}" class="alert alert-info">No applicants found for this job.</div>
+
+                    <table class="table table-bordered" id="jobApplicationTable" th:if="${!applications.empty}">
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Full Name</th>
+                            <th>Phone</th>
+                            <th>Resume</th>
+                            <th>Applied At</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="app, iter : ${applications}">
+                            <td th:text="${iter.index + 1}">1</td>
+                            <td th:text="${app.jobSeeker.fullName}">Full Name</td>
+                            <td th:text="${app.jobSeeker.phone}">Phone</td>
+                            <td>
+                                <a th:href="@{${app.jobSeeker.resumeUrl}}" target="_blank" class="btn btn-sm btn-outline-info">
+                                    View Resume
+                                </a>
+                            </td>
+                            <td th:text="${#temporals.format(app.appliedAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

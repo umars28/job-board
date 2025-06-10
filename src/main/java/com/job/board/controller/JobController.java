@@ -1,6 +1,7 @@
 package com.job.board.controller;
 
 import com.job.board.entity.Job;
+import com.job.board.entity.JobApplication;
 import com.job.board.enums.JobStatus;
 import com.job.board.repository.JobRepository;
 import com.job.board.service.JobService;

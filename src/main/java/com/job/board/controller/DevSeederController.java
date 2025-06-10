@@ -1,10 +1,10 @@
 package com.job.board.controller;
 
 import com.job.board.entity.*;
+import com.job.board.enums.ApplicantStatus;
 import com.job.board.enums.JobStatus;
 import com.job.board.enums.Role;
 import com.job.board.repository.*;
-import org.hibernate.mapping.Collection;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,8 +25,9 @@ public class DevSeederController {
     private final CompanyRepository companyRepository;
     private final SeekerRepository seekerRepository;
     private final JobRepository jobRepository;
+    private final JobApplicationRepository jobApplicationRepository;
 
-    public DevSeederController(UserRepository userRepository, JobCategoryRepository jobCategoryRepository, PasswordEncoder passwordEncoder, JobTagRepository jobTagRepository, CompanyRepository companyRepository, SeekerRepository seekerRepository, JobRepository jobRepository) {
+    public DevSeederController(UserRepository userRepository, JobCategoryRepository jobCategoryRepository, PasswordEncoder passwordEncoder, JobTagRepository jobTagRepository, CompanyRepository companyRepository, SeekerRepository seekerRepository, JobRepository jobRepository, JobApplicationRepository jobApplicationRepository) {
         this.userRepository = userRepository;
         this.jobCategoryRepository = jobCategoryRepository;
         this.passwordEncoder = passwordEncoder;
@@ -34,6 +35,7 @@ public class DevSeederController {
         this.companyRepository = companyRepository;
         this.seekerRepository = seekerRepository;
         this.jobRepository = jobRepository;
+        this.jobApplicationRepository = jobApplicationRepository;
     }
 
     @GetMapping("/seed-admin")
@@ -294,6 +296,38 @@ public class DevSeederController {
         }
 
         return "ℹ️ Jobs Already Exist In The DB.";
+    }
+
+    @GetMapping("/seed-job-applications")
+    @ResponseBody
+    public String seedJobApplications() {
+        if (jobApplicationRepository.count() == 0) {
+            List<JobSeeker> jobSeekers = seekerRepository.findAll();
+            List<Job> jobs = jobRepository.findAll();
+
+            if (jobSeekers.isEmpty() || jobs.isEmpty()) {
+                return "❌ Pastikan Job dan Job Seeker tersedia.";
+            }
+
+            List<JobApplication> applications = new ArrayList<>();
+            Random random = new Random();
+
+            for (int i = 0; i < 50; i++) {
+                JobApplication application = new JobApplication();
+                application.setJob(jobs.get(random.nextInt(jobs.size())));
+                application.setJobSeeker(jobSeekers.get(random.nextInt(jobSeekers.size())));
+                application.setApplicantStatus(ApplicantStatus.values()[random.nextInt(ApplicantStatus.values().length)]);
+                application.setAppliedAt(LocalDateTime.now().minusDays(random.nextInt(30)));
+
+                applications.add(application);
+            }
+
+            jobApplicationRepository.saveAll(applications);
+            System.out.println("✅ 50 Job Applications seeded.");
+            return "✅ 50 Job Applications seeded.";
+        }
+
+        return "ℹ️ Job Applications already exist.";
     }
 
 }

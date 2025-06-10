@@ -45,7 +45,9 @@
                         <tbody>
                         <tr th:each="job, iter : ${jobs}">
                             <td th:text="${iter.index + 1}">1</td>
-                            <td th:text="${job.title}">Title</td>
+                            <td>
+                                <a th:href="@{/jobs/edit/{id}(id=${job.id})}" th:text="${job.title}">Title</a>
+                            </td>
                             <td th:text="${job.company.name}">Company</td>
                             <td th:text="${job.category.name}">Category</td>
                             <td>
@@ -54,7 +56,12 @@
                             </td>
                             <td th:text="${#temporals.format(job.postedAt, 'yyyy-MM-dd')}">Posted</td>
                             <td th:text="${#temporals.format(job.expiredAt, 'yyyy-MM-dd')}">Expired</td>
-                            <td th:text="${job.jobApplications.size()}">0</td>
+                            <td>
+                                <a th:href="@{/jobs/applications/{id}/applicants(id=${job.id})}"
+                                   th:text="${job.jobApplications.size()}"
+                                   class="btn btn-link btn-sm p-0 m-0 align-baseline">
+                                </a>
+                            </td>
                             <td>
                                 <a th:if="${selectedStatus != 'ARCHIVED'}"
                                    th:href="@{/jobs/archive/{id}(id=${job.id})}"
