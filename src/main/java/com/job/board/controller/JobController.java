@@ -7,7 +7,10 @@ import com.job.board.repository.CompanyRepository;
 import com.job.board.repository.JobCategoryRepository;
 import com.job.board.repository.JobRepository;
 import com.job.board.repository.JobTagRepository;
+import com.job.board.service.CompanyService;
+import com.job.board.service.JobCategoryService;
 import com.job.board.service.JobService;
+import com.job.board.service.JobTagService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -25,14 +28,20 @@ public class JobController {
     private final JobTagRepository jobTagRepository;
     private final JobCategoryRepository jobCategoryRepository;
     private final CompanyRepository companyRepository;
+    private final CompanyService companyService;
+    private final JobTagService jobTagService;
+    private final JobCategoryService jobCategoryService;
     private JobRepository jobRepository;
 
-    public JobController(JobRepository jobRepository, JobService jobService, JobTagRepository jobTagRepository, JobCategoryRepository jobCategoryRepository, CompanyRepository companyRepository) {
+    public JobController(JobRepository jobRepository, JobService jobService, JobTagRepository jobTagRepository, JobCategoryRepository jobCategoryRepository, CompanyRepository companyRepository, CompanyService companyService, JobTagService jobTagService, JobCategoryService jobCategoryService) {
         this.jobRepository = jobRepository;
         this.jobService = jobService;
         this.jobTagRepository = jobTagRepository;
         this.jobCategoryRepository = jobCategoryRepository;
         this.companyRepository = companyRepository;
+        this.companyService = companyService;
+        this.jobTagService = jobTagService;
+        this.jobCategoryService = jobCategoryService;
     }
 
     @GetMapping("/list")
@@ -52,18 +61,62 @@ public class JobController {
         return "/admin/job/index";
     }
 
-    @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable Long id, Model model) {
-        Job job = jobRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid job ID: " + id));
-
+    @GetMapping("/create")
+    public String createForm(Model model) {
+        Job job = new Job();
         model.addAttribute("job", job);
         model.addAttribute("statuses", JobStatus.values());
-        model.addAttribute("categories", jobCategoryRepository.findAll());
-        model.addAttribute("tags", jobTagRepository.findAll());
-        model.addAttribute("companies", companyRepository.findAll());
+        model.addAttribute("categories", jobCategoryService.getAllJobCategories());
+        model.addAttribute("tags", jobTagService.getAllJobTags());
+        model.addAttribute("companies", companyService.getAllCompanies());
+
+        return "/admin/job/create";
+    }
+
+    @PostMapping("/save")
+    public String saveJob(@ModelAttribute("job") Job job, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            jobService.saveJob(job);
+            redirectAttributes.addFlashAttribute("message", "Job berhasil dibuat.");
+            return "redirect:/jobs/list";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", "Gagal membuat job: " + e.getMessage());
+            model.addAttribute("job", job);
+            model.addAttribute("statuses", JobStatus.values());
+            model.addAttribute("categories", jobCategoryService.getAllJobCategories());
+            model.addAttribute("tags", jobTagService.getAllJobTags());
+            model.addAttribute("companies", companyService.getAllCompanies());
+            return "/admin/job/create";
+        }
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editForm(@PathVariable Long id, Model model) {
+        Job job = jobService.getJobById(id);
+        model.addAttribute("job", job);
+        model.addAttribute("statuses", JobStatus.values());
+        model.addAttribute("categories", jobCategoryService.getAllJobCategories());
+        model.addAttribute("tags", jobTagService.getAllJobTags());
+        model.addAttribute("companies", companyService.getAllCompanies());
 
         return "/admin/job/edit";
+    }
+
+    @PostMapping("/update/{id}")
+    public String updateJob(@PathVariable Long id, @ModelAttribute("job") Job job, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            jobService.updateJob(id, job);
+            redirectAttributes.addFlashAttribute("message", "Job berhasil diupdate.");
+            return "redirect:/jobs/list";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", "Gagal mengupdate job: " + e.getMessage());
+            model.addAttribute("job", job);
+            model.addAttribute("statuses", JobStatus.values());
+            model.addAttribute("categories", jobCategoryService.getAllJobCategories());
+            model.addAttribute("tags", jobTagService.getAllJobTags());
+            model.addAttribute("companies", companyService.getAllCompanies());
+            return "/admin/job/edit";
+        }
     }
 
     @GetMapping("/archive/{id}")
