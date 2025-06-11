@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 public interface JobApplicationRepository extends JpaRepository<JobApplication, Long> {
-    @Query
     List<JobApplication> findByJobId(Long jobId);
 
     @Query("SELECT ja.jobSeeker.id AS seekerId, COUNT(ja.id) AS appCount " +

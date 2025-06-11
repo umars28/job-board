@@ -34,6 +34,9 @@
             </div>
         </div>
 
+        <div th:if="${message}" class="alert alert-success" role="alert" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-danger" role="alert" th:text="${error}"></div>
+
         <a th:href="@{'/jobs/applications/' + ${job.id} + '/applicants'}"
            class="btn btn-outline-primary btn-sm"
            th:classappend="${selectedStatus} == null ? ' active' : ''">
@@ -44,13 +47,13 @@
            th:href="@{'/jobs/applications/' + ${job.id} + '/applicants'(status=${status.name()})}"
            th:text="${status.name()}"
            class="btn btn-outline-primary btn-sm"
-           th:classappend="${selectedStatus} == ${status.name()} ? ' active' : ''">
+           th:classappend="${selectedStatus == status.name()} ? ' active' : ''">
         </a>
 
         <div class="card shadow mb-4">
             <div class="card-body">
                 <div class="table-responsive">
-                    <div th:if="${applications.empty}" class="alert alert-info">No applicants found for this job.</div>
+                    <div th:if="${#lists.isEmpty(applications)}" class="alert alert-info">No applicants found for this job.</div>
 
                     <table class="table table-bordered" id="jobApplicationTable" th:if="${!applications.empty}">
                         <thead>
@@ -58,8 +61,10 @@
                             <th>#</th>
                             <th>Full Name</th>
                             <th>Phone</th>
+                            <th>Email</th>
                             <th>Resume</th>
                             <th>Applied At</th>
+                            <th>Status</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -67,12 +72,26 @@
                             <td th:text="${iter.index + 1}">1</td>
                             <td th:text="${app.jobSeeker.fullName}">Full Name</td>
                             <td th:text="${app.jobSeeker.phone}">Phone</td>
+                            <td th:text="${app.jobSeeker.user.email}"></td>
                             <td>
                                 <a th:href="@{${app.jobSeeker.resumeUrl}}" target="_blank" class="btn btn-sm btn-outline-info">
                                     View Resume
                                 </a>
                             </td>
                             <td th:text="${#temporals.format(app.appliedAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
+                            <td>
+                                <form th:action="@{/jobs/applications/update-status}" method="post">
+                                    <input type="hidden" name="applicationId" th:value="${app.id}"/>
+                                    <select name="status" class="form-control form-control-sm">
+                                        <option th:each="status : ${statuses}"
+                                                th:value="${status.name()}"
+                                                th:text="${status.name()}"
+                                                th:selected="${app.applicantStatus.name() == status.name()}">
+                                        </option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary mt-1">Update</button>
+                                </form>
+                            </td>
                         </tr>
                         </tbody>
                     </table>

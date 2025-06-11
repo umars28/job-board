@@ -24,4 +24,12 @@ public class JobApplicationService {
     public List<JobApplication> getApplicantByStatus(Long id, ApplicantStatus status) {
         return jobApplicationRepository.findByJobIdAndApplicantStatus(id, status);
     }
+
+    public JobApplication updateApplicationStatus(Long applicationId, ApplicantStatus newStatus) {
+        JobApplication application = jobApplicationRepository.findById(applicationId)
+                .orElseThrow(() -> new RuntimeException("Application not found"));
+
+        application.setApplicantStatus(newStatus);
+        return jobApplicationRepository.save(application);
+    }
 }
