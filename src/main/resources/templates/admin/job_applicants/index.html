@@ -34,20 +34,18 @@
             </div>
         </div>
 
-
-        <a th:href="@{/job-applications/list}"
+        <a th:href="@{'/jobs/applications/' + ${job.id} + '/applicants'}"
            class="btn btn-outline-primary btn-sm"
            th:classappend="${selectedStatus} == null ? ' active' : ''">
             All
         </a>
 
         <a th:each="status : ${statuses}"
-           th:href="@{/job-applications/list(status=${status.name()})}"
+           th:href="@{'/jobs/applications/' + ${job.id} + '/applicants'(status=${status.name()})}"
            th:text="${status.name()}"
            class="btn btn-outline-primary btn-sm"
            th:classappend="${selectedStatus} == ${status.name()} ? ' active' : ''">
         </a>
-
 
         <div class="card shadow mb-4">
             <div class="card-body">
