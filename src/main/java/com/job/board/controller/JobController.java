@@ -3,7 +3,10 @@ package com.job.board.controller;
 import com.job.board.entity.Job;
 import com.job.board.entity.JobApplication;
 import com.job.board.enums.JobStatus;
+import com.job.board.repository.CompanyRepository;
+import com.job.board.repository.JobCategoryRepository;
 import com.job.board.repository.JobRepository;
+import com.job.board.repository.JobTagRepository;
 import com.job.board.service.JobService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,11 +22,17 @@ import java.util.List;
 public class JobController {
 
     private final JobService jobService;
+    private final JobTagRepository jobTagRepository;
+    private final JobCategoryRepository jobCategoryRepository;
+    private final CompanyRepository companyRepository;
     private JobRepository jobRepository;
 
-    public JobController(JobRepository jobRepository, JobService jobService) {
+    public JobController(JobRepository jobRepository, JobService jobService, JobTagRepository jobTagRepository, JobCategoryRepository jobCategoryRepository, CompanyRepository companyRepository) {
         this.jobRepository = jobRepository;
         this.jobService = jobService;
+        this.jobTagRepository = jobTagRepository;
+        this.jobCategoryRepository = jobCategoryRepository;
+        this.companyRepository = companyRepository;
     }
 
     @GetMapping("/list")
@@ -41,6 +50,20 @@ public class JobController {
         model.addAttribute("jobs", jobs);
         model.addAttribute("statuses", JobStatus.values());
         return "/admin/job/index";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editForm(@PathVariable Long id, Model model) {
+        Job job = jobRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid job ID: " + id));
+
+        model.addAttribute("job", job);
+        model.addAttribute("statuses", JobStatus.values());
+        model.addAttribute("categories", jobCategoryRepository.findAll());
+        model.addAttribute("tags", jobTagRepository.findAll());
+        model.addAttribute("companies", companyRepository.findAll());
+
+        return "/admin/job/edit";
     }
 
     @GetMapping("/archive/{id}")

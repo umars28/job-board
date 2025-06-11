@@ -7,6 +7,12 @@ $(document).ready(function() {
     $('#jobDataTable').DataTable();
     $('#jobApplicationTable').DataTable();
 
+    $('.select2').select2({
+        placeholder: "Select tags",
+        allowClear: true
+    });
+
+
     // CATEGORY JOB MODULE
     $(document).on('click', '.btnEditCategory', function () {
         const id = $(this).data('id');
