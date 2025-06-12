@@ -45,6 +45,7 @@ public class UserService {
             Company formCompany = formUser.getCompany();
 
             if (formCompany != null) {
+                existingCompany.setName(formUser.getFirstName()+ " " +formUser.getLastName());
                 existingCompany.setAddress(formCompany.getAddress());
                 existingCompany.setWebsite(formCompany.getWebsite());
                 companyRepository.save(existingCompany);

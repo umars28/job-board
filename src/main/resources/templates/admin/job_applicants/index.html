@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <div th:replace="~{admin/fragments/app :: app(~{::content})}">
     <div th:fragment="content">
@@ -16,7 +17,12 @@
                 <dl class="row mb-0">
                     <dt class="col-sm-3">Title</dt>
                     <dd class="col-sm-9">
-                        <a th:href="@{/jobs/edit/{id}(id=${job.id})}" th:text="${job.title}">Software Engineer</a>
+                        <div sec:authorize="hasRole('COMPANY')">
+                            <a th:href="@{/jobs/edit/{id}(id=${job.id})}" th:text="${job.title}">Software Engineer</a>
+                        </div>
+                        <div sec:authorize="hasRole('ADMIN')">
+                            <span th:text="${job.title}">Title</span>
+                        </div>
                     </dd>
 
                     <dt class="col-sm-3">Category</dt>
@@ -64,7 +70,9 @@
                             <th>Email</th>
                             <th>Resume</th>
                             <th>Applied At</th>
-                            <th>Status</th>
+                            <div sec:authorize="hasRole('COMPANY')">
+                                <th>Status</th>
+                            </div>
                         </tr>
                         </thead>
                         <tbody>
@@ -79,6 +87,7 @@
                                 </a>
                             </td>
                             <td th:text="${#temporals.format(app.appliedAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
+                            <div sec:authorize="hasRole('COMPANY')">
                             <td>
                                 <form th:action="@{/jobs/applications/update-status}" method="post">
                                     <input type="hidden" name="applicationId" th:value="${app.id}"/>
@@ -92,6 +101,7 @@
                                     <button type="submit" class="btn btn-sm btn-primary mt-1">Update</button>
                                 </form>
                             </td>
+                            </div>
                         </tr>
                         </tbody>
                     </table>

@@ -46,18 +46,10 @@ public class JobController {
 
     @GetMapping("/list")
     public String list(@RequestParam(required = false) String status, Model model) {
-        List<Job> jobs;
-
-        if (status != null) {
-            JobStatus jobStatus = JobStatus.valueOf(status);
-            jobs = jobService.getJobsByStatus(jobStatus);
-            model.addAttribute("selectedStatus", status);
-        } else {
-            jobs = jobService.getAllJobs();
-        }
-
+        List<Job> jobs = jobService.getJobsFiltered(status);
         model.addAttribute("jobs", jobs);
         model.addAttribute("statuses", JobStatus.values());
+        model.addAttribute("selectedStatus", status);
         return "/admin/job/index";
     }
 

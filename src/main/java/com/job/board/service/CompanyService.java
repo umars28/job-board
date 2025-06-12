@@ -109,4 +109,9 @@ public class CompanyService {
     public long getTotalCompanies() {
         return companyRepository.count();
     }
+
+    public Company findByUsername(String username) {
+        return companyRepository.findByUserUsername(username)
+                .orElseThrow(() -> new RuntimeException("Company not found for user: " + username));
+    }
 }

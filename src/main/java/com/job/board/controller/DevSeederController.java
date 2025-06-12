@@ -198,8 +198,8 @@ public class DevSeederController {
             for (int i = 1; i <= 25; i++) {
                 User user = new User();
                 user.setUsername("company_user" + i);
-                user.setFirstName("First" + i);
-                user.setLastName("Last" + i);
+                user.setFirstName("PT");
+                user.setLastName("Company" + i);
                 user.setEmail("company" + i + "@gmail.com");
                 user.setPassword(passwordEncoder.encode("password" + i));
                 user.setRole(Role.COMPANY);
@@ -207,7 +207,7 @@ public class DevSeederController {
                 userRepository.save(user);
 
                 Company company = new Company();
-                company.setName("Company " + i);
+                company.setName("PT Company " + i);
                 company.setAddress("Address " + i);
                 company.setWebsite("https://www.company" + i + ".com");
                 company.setUser(user);
@@ -230,8 +230,8 @@ public class DevSeederController {
             for (int i = 1; i <= 25; i++) {
                 User user = new User();
                 user.setUsername("jobseeker_user" + i);
-                user.setFirstName("JSFirst" + i);
-                user.setLastName("JSLast" + i);
+                user.setFirstName("Job");
+                user.setLastName("Seeker" + i);
                 user.setEmail("jobseeker" + i + "@gmail.com");
                 user.setPassword(passwordEncoder.encode("password" + i));
                 user.setRole(Role.JOB_SEEKER);

@@ -1,7 +1,9 @@
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <th:block th:fragment="sidebar">
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar"
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="">
         <div class="sidebar-brand-text mx-3">Job Boards</div>
     </a>
 
@@ -29,32 +31,35 @@
         <div class="bg-white py-2 collapse-inner rounded">
                 <a class="collapse-item" href="/jobs/list"
                    th:classappend="${requestURI == '/jobs/list'} ? ' active'">List Job</a>
+            <div sec:authorize="hasRole('ADMIN')">
                 <a class="collapse-item" href="/jobs/category"
-                   th:classappend="${requestURI == '/jobs/category'} ? ' active'">Category</a>
-                <a class="collapse-item" href="/jobs/tag"
-                   th:classappend="${requestURI == '/jobs/tag'} ? ' active'">Tags</a>
+                       th:classappend="${requestURI == '/jobs/category'} ? ' active'">Category</a>
+                    <a class="collapse-item" href="/jobs/tag"
+                       th:classappend="${requestURI == '/jobs/tag'} ? ' active'">Tags</a>
+                </div>
             </div>
         </div>
     </li>
 
 
     <!-- Nav Item - Utilities -->
-    <li th:class="${requestURI.startsWith('/users')} ? 'nav-item active' : 'nav-item'">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsers"
-           aria-expanded="true" aria-controls="collapseUsers">
-            <i class="fas fa-fw fa-wrench"></i>
-            <span>Management</span>
-        </a>
-        <div id="collapseUsers" th:class="${requestURI.startsWith('/users')} ? 'collapse show' : 'collapse'">
-            <div class="bg-white py-2 collapse-inner rounded">
-                <a class="collapse-item" href="/users/seeker"
-                   th:classappend="${requestURI == '/users/seeker'} ? ' active'">List Seeker</a>
-                <a class="collapse-item" href="/users/company"
-                   th:classappend="${requestURI == '/users/company'} ? ' active'">List Company</a>
+    <div sec:authorize="hasRole('ADMIN')">
+        <li th:class="${requestURI.startsWith('/users')} ? 'nav-item active' : 'nav-item'">
+            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUsers"
+               aria-expanded="true" aria-controls="collapseUsers">
+                <i class="fas fa-fw fa-wrench"></i>
+                <span>Management</span>
+            </a>
+            <div id="collapseUsers" th:class="${requestURI.startsWith('/users')} ? 'collapse show' : 'collapse'">
+                <div class="bg-white py-2 collapse-inner rounded">
+                    <a class="collapse-item" href="/users/seeker"
+                       th:classappend="${requestURI == '/users/seeker'} ? ' active'">List Seeker</a>
+                    <a class="collapse-item" href="/users/company"
+                       th:classappend="${requestURI == '/users/company'} ? ' active'">List Company</a>
+                </div>
             </div>
-        </div>
-    </li>
-    <!-- Divider -->
+        </li>
+    </div>>    <!-- Divider -->
     <hr class="sidebar-divider d-none d-md-block">
 
     <!-- Sidebar Toggler (Sidebar) -->

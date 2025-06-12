@@ -1,12 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <body>
 <div th:replace="~{admin/fragments/app :: app(~{::content})}">
     <div th:fragment="content">
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
             <h1 class="h3 mb-0 text-gray-800">List Job</h1>
-            <a th:href="@{/jobs/create}" class="btn btn-success">Create Job</a>
+            <div sec:authorize="hasRole('COMPANY')">
+                <a th:href="@{/jobs/create}" class="btn btn-success">Create Job</a>
+            </div>
         </div>
 
         <a th:href="@{/jobs/list}"
@@ -39,14 +42,21 @@
                             <th>Posted At</th>
                             <th>Expired At</th>
                             <th>Applied</th>
-                            <th>Actions</th>
+                            <div sec:authorize="hasRole('COMPANY')">
+                                <th>Actions</th>
+                            </div>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="job, iter : ${jobs}">
                             <td th:text="${iter.index + 1}">1</td>
                             <td>
-                                <a th:href="@{/jobs/edit/{id}(id=${job.id})}" th:text="${job.title}">Title</a>
+                                <div sec:authorize="hasRole('COMPANY')">
+                                    <a th:href="@{/jobs/edit/{id}(id=${job.id})}" th:text="${job.title}">Title</a>
+                                </div>
+                                <div sec:authorize="hasRole('ADMIN')">
+                                    <span th:text="${job.title}">Title</span>
+                                </div>
                             </td>
                             <td th:text="${job.company.name}">Company</td>
                             <td th:text="${job.category.name}">Category</td>
@@ -62,6 +72,7 @@
                                    class="btn btn-link btn-sm p-0 m-0 align-baseline">
                                 </a>
                             </td>
+                            <div sec:authorize="hasRole('COMPANY')">
                             <td>
                                 <a th:if="${selectedStatus != 'ARCHIVED'}"
                                    th:href="@{/jobs/archive/{id}(id=${job.id})}"
@@ -73,6 +84,7 @@
                                    class="btn btn-sm btn-success"
                                    onclick="return confirm('Restore this job?')">Restore</a>
                             </td>
+                            </div>
                         </tr>
                         </tbody>
                     </table>

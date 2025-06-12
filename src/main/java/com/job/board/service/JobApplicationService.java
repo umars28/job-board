@@ -1,5 +1,6 @@
 package com.job.board.service;
 
+import com.job.board.entity.Company;
 import com.job.board.entity.Job;
 import com.job.board.entity.JobApplication;
 import com.job.board.enums.ApplicantStatus;
@@ -35,5 +36,9 @@ public class JobApplicationService {
 
     public long getTotalApplications() {
         return jobApplicationRepository.count();
+    }
+
+    public int countApplicationsByCompany(Company company) {
+        return jobApplicationRepository.countByJobCompany(company);
     }
 }

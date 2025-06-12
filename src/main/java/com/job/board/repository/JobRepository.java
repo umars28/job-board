@@ -35,5 +35,21 @@ public interface JobRepository extends JpaRepository<Job, Long> {
             "LEFT JOIN j.tags")
     List<Job> findAllWithDetails();
 
+    @Query("SELECT DISTINCT j FROM Job j " +
+            "JOIN FETCH j.company c " +
+            "JOIN FETCH j.category " +
+            "LEFT JOIN j.tags " +
+            "WHERE c.user.username = :username")
+    List<Job> findByCompanyUsernameWithDetails(@Param("username") String username);
+
+    @Query("SELECT DISTINCT j FROM Job j " +
+            "JOIN FETCH j.company c " +
+            "JOIN FETCH j.category " +
+            "LEFT JOIN j.tags " +
+            "WHERE c.user.username = :username AND j.status = :status")
+    List<Job> findByCompanyUsernameAndStatusWithDetails(@Param("username") String username, @Param("status") JobStatus status);
+
     long countAllByStatus(JobStatus status);
+
+    int countByCompanyAndStatus(Company company, JobStatus status);
 }

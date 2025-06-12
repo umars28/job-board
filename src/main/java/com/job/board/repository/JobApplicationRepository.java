@@ -29,4 +29,7 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
     void deleteByCompany(@Param("company") Company company);
 
     List<JobApplication> findByJobIdAndApplicantStatus(Long jobId, ApplicantStatus applicantStatus);
+
+    @Query("SELECT COUNT(a) FROM JobApplication a WHERE a.job.company = :company")
+    int countByJobCompany(@Param("company") Company company);
 }

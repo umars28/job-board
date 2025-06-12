@@ -1,10 +1,15 @@
 package com.job.board.service;
 
+import com.job.board.entity.Company;
 import com.job.board.entity.Job;
 import com.job.board.entity.JobApplication;
 import com.job.board.enums.JobStatus;
+import com.job.board.repository.CompanyRepository;
 import com.job.board.repository.JobCategoryRepository;
 import com.job.board.repository.JobRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,18 +18,40 @@ import java.util.List;
 public class JobService {
     private final JobRepository jobRepository;
     private final JobCategoryRepository jobCategoryRepository;
+    private final CompanyRepository companyRepository;
+    private final CompanyService companyService;
 
-    public JobService(JobRepository jobRepository, JobCategoryRepository jobCategoryRepository) {
+    public JobService(JobRepository jobRepository, JobCategoryRepository jobCategoryRepository, CompanyRepository companyRepository, CompanyService companyService) {
         this.jobRepository = jobRepository;
         this.jobCategoryRepository = jobCategoryRepository;
+        this.companyRepository = companyRepository;
+        this.companyService = companyService;
     }
 
-    public List<Job> getAllJobs(){
-        return jobRepository.findAllWithDetails();
-    }
+    public List<Job> getJobsFiltered(String status) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
 
-    public List<Job> getJobsByStatus(JobStatus jobStatus) {
-        return jobRepository.findByStatusWithDetails(jobStatus);
+        boolean isCompany = auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_COMPANY"));
+
+        JobStatus jobStatus = null;
+        if (status != null) {
+            jobStatus = JobStatus.valueOf(status);
+        }
+
+        if (isCompany) {
+            if (jobStatus != null) {
+                return jobRepository.findByCompanyUsernameAndStatusWithDetails(username, jobStatus);
+            }
+            return jobRepository.findByCompanyUsernameWithDetails(username);
+        } else {
+            if (jobStatus != null) {
+                return jobRepository.findByStatusWithDetails(jobStatus);
+            }
+            return jobRepository.findAllWithDetails();
+        }
     }
 
     public Job jobDetails(Long id) {
@@ -52,6 +79,10 @@ public class JobService {
     }
 
     public void saveJob(Job job) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName();
+        Company company = companyService.findByUsername(username);
+        job.setCompany(company);
         jobRepository.save(job);
     }
 
@@ -80,5 +111,9 @@ public class JobService {
 
     public long getTotalActiveJobPostings() {
         return jobRepository.countAllByStatus((JobStatus.OPEN));
+    }
+
+    public int countActiveJobsByCompany(Company company) {
+        return jobRepository.countByCompanyAndStatus(company, JobStatus.OPEN);
     }
 }
