@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Ubah Profil</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+<body>
+<div th:replace="~{admin/fragments/app :: app(~{::content})}">
+    <div th:fragment="content">
+        <div class="container mt-5">
+            <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                <span th:text="${successMessage}"></span>
+            </div>
+            <h2>Ubah Profil</h2>
+            <form th:action="@{/profile/update}" method="post" th:object="${user}">
+                <input type="hidden" th:field="*{id}"/>
+
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" class="form-control" th:field="*{username}" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Nama Depan</label>
+                    <input type="text" class="form-control" th:field="*{firstName}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nama Belakang</label>
+                    <input type="text" class="form-control" th:field="*{lastName}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" class="form-control" th:field="*{email}" required>
+                </div>
+
+                <div sec:authorize="hasRole('COMPANY')">
+                    <div class="form-group">
+                        <label>Address</label>
+                        <input type="text" class="form-control" th:field="*{company.address}" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Website</label>
+                        <input type="text" class="form-control" th:field="*{company.website}" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Password Baru</label>
+                    <input type="password" class="form-control" th:field="*{password}">
+                    <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah password</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

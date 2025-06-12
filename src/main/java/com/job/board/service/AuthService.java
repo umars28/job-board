@@ -30,11 +30,12 @@ public class AuthService {
             User user = userData.get();
 
             if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+                String roleName = "ROLE_" +user.getRole().name();
                 UsernamePasswordAuthenticationToken authenticationToken =
                         new UsernamePasswordAuthenticationToken(
                                 user.getUsername(),
                                 null,
-                                List.of(new SimpleGrantedAuthority("ROLE_ADMIN"))
+                                List.of(new SimpleGrantedAuthority(roleName))
                         );
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
                 session.setAttribute("SPRING_SECURITY_CONTEXT", SecurityContextHolder.getContext());
