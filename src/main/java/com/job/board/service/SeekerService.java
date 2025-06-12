@@ -117,4 +117,8 @@ public class SeekerService {
             userRepository.delete(user);
         }
     }
+
+    public long getTotalJobSeekers() {
+        return seekerRepository.count();
+    }
 }

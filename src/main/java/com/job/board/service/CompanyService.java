@@ -105,4 +105,8 @@ public class CompanyService {
             userRepository.delete(user);
         }
     }
+
+    public long getTotalCompanies() {
+        return companyRepository.count();
+    }
 }

@@ -34,4 +34,6 @@ public interface JobRepository extends JpaRepository<Job, Long> {
             "JOIN FETCH j.category " +
             "LEFT JOIN j.tags")
     List<Job> findAllWithDetails();
+
+    long countAllByStatus(JobStatus status);
 }

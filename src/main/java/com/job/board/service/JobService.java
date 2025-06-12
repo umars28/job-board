@@ -77,4 +77,8 @@ public class JobService {
 
         jobRepository.save(existingJob);
     }
+
+    public long getTotalActiveJobPostings() {
+        return jobRepository.countAllByStatus((JobStatus.OPEN));
+    }
 }

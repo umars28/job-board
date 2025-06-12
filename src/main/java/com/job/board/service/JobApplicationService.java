@@ -32,4 +32,8 @@ public class JobApplicationService {
         application.setApplicantStatus(newStatus);
         return jobApplicationRepository.save(application);
     }
+
+    public long getTotalApplications() {
+        return jobApplicationRepository.count();
+    }
 }
