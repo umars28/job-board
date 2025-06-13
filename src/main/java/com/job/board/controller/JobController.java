@@ -11,6 +11,7 @@ import com.job.board.service.CompanyService;
 import com.job.board.service.JobCategoryService;
 import com.job.board.service.JobService;
 import com.job.board.service.JobTagService;
+import com.job.board.util.AuthUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -31,9 +32,10 @@ public class JobController {
     private final CompanyService companyService;
     private final JobTagService jobTagService;
     private final JobCategoryService jobCategoryService;
+    private final AuthUtil authUtil;
     private JobRepository jobRepository;
 
-    public JobController(JobRepository jobRepository, JobService jobService, JobTagRepository jobTagRepository, JobCategoryRepository jobCategoryRepository, CompanyRepository companyRepository, CompanyService companyService, JobTagService jobTagService, JobCategoryService jobCategoryService) {
+    public JobController(JobRepository jobRepository, JobService jobService, JobTagRepository jobTagRepository, JobCategoryRepository jobCategoryRepository, CompanyRepository companyRepository, CompanyService companyService, JobTagService jobTagService, JobCategoryService jobCategoryService, AuthUtil authUtil) {
         this.jobRepository = jobRepository;
         this.jobService = jobService;
         this.jobTagRepository = jobTagRepository;
@@ -42,6 +44,7 @@ public class JobController {
         this.companyService = companyService;
         this.jobTagService = jobTagService;
         this.jobCategoryService = jobCategoryService;
+        this.authUtil = authUtil;
     }
 
     @GetMapping("/list")
@@ -85,6 +88,7 @@ public class JobController {
     @GetMapping("/edit/{id}")
     public String editForm(@PathVariable Long id, Model model) {
         Job job = jobService.getJobById(id);
+        authUtil.authorizeCompanyAccessToJob(job);
         model.addAttribute("job", job);
         model.addAttribute("statuses", JobStatus.values());
         model.addAttribute("categories", jobCategoryService.getAllJobCategories());

@@ -7,6 +7,7 @@ import com.job.board.enums.JobStatus;
 import com.job.board.repository.JobApplicationRepository;
 import com.job.board.service.JobApplicationService;
 import com.job.board.service.JobService;
+import com.job.board.util.AuthUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,16 +23,19 @@ public class JobApplicationController {
     private final JobService jobService;
     private final JobApplicationService jobApplicationService;
     private final JobApplicationRepository jobApplicationRepository;
+    private final AuthUtil authUtil;
 
-    public JobApplicationController(JobService jobService, JobApplicationService jobApplicationService, JobApplicationRepository jobApplicationRepository) {
+    public JobApplicationController(JobService jobService, JobApplicationService jobApplicationService, JobApplicationRepository jobApplicationRepository, AuthUtil authUtil) {
         this.jobService = jobService;
         this.jobApplicationService = jobApplicationService;
         this.jobApplicationRepository = jobApplicationRepository;
+        this.authUtil = authUtil;
     }
 
     @GetMapping("/{id}/applicants")
     public String viewApplicant(@RequestParam(required = false) String status, @PathVariable("id") Long id, Model model) {
         Job job = jobService.jobDetails(id);
+        authUtil.authorizeCompanyOrAdminAccessToJob(job);
 
         List<JobApplication> applications;
 

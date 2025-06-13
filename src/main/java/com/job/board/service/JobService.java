@@ -7,6 +7,7 @@ import com.job.board.enums.JobStatus;
 import com.job.board.repository.CompanyRepository;
 import com.job.board.repository.JobCategoryRepository;
 import com.job.board.repository.JobRepository;
+import com.job.board.util.AuthUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,12 +21,14 @@ public class JobService {
     private final JobCategoryRepository jobCategoryRepository;
     private final CompanyRepository companyRepository;
     private final CompanyService companyService;
+    private final AuthUtil authUtil;
 
-    public JobService(JobRepository jobRepository, JobCategoryRepository jobCategoryRepository, CompanyRepository companyRepository, CompanyService companyService) {
+    public JobService(JobRepository jobRepository, JobCategoryRepository jobCategoryRepository, CompanyRepository companyRepository, CompanyService companyService, AuthUtil authUtil) {
         this.jobRepository = jobRepository;
         this.jobCategoryRepository = jobCategoryRepository;
         this.companyRepository = companyRepository;
         this.companyService = companyService;
+        this.authUtil = authUtil;
     }
 
     public List<Job> getJobsFiltered(String status) {
@@ -62,6 +65,7 @@ public class JobService {
     public void archiveJob(Long id) {
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
+        authUtil.authorizeCompanyAccessToJob(job);
         job.setStatus(JobStatus.ARCHIVED);
         jobRepository.save(job);
     }
@@ -69,6 +73,7 @@ public class JobService {
     public void restoreJob(Long id) {
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
+        authUtil.authorizeCompanyAccessToJob(job);
         job.setStatus(JobStatus.OPEN);
         jobRepository.save(job);
     }
