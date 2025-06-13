@@ -11,4 +11,8 @@ import java.util.List;
 public interface JobCategoryRepository extends JpaRepository<JobCategory, Long> {
     @Query("SELECT c FROM JobCategory c LEFT JOIN FETCH c.jobs")
     List<JobCategory> findAllWithJobs();
+
+    @Query("SELECT DISTINCT c.name FROM JobCategory c JOIN c.jobs j")
+    List<String> findCategoryNamesWithJobs();
+
 }

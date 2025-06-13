@@ -13,4 +13,6 @@ public interface JobTagRepository extends JpaRepository<JobTag, Long> {
     @Query("SELECT c FROM JobTag c LEFT JOIN FETCH c.jobs")
     List<JobTag> findAllWithJobs();
 
+    @Query("SELECT DISTINCT t.name FROM JobTag t JOIN t.jobs j WHERE j.status = 'OPEN'")
+    List<String> findTagsWithJobs();
 }

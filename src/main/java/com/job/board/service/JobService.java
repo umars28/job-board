@@ -8,6 +8,9 @@ import com.job.board.repository.CompanyRepository;
 import com.job.board.repository.JobCategoryRepository;
 import com.job.board.repository.JobRepository;
 import com.job.board.util.AuthUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -121,4 +124,15 @@ public class JobService {
     public int countActiveJobsByCompany(Company company) {
         return jobRepository.countByCompanyAndStatus(company, JobStatus.OPEN);
     }
+
+    public List<String> getDistinctLocations() {
+        return jobRepository.findDistinctLocations();
+    }
+
+    public Page<Job> findOpenJobs(Pageable pageable) {
+        Page<Long> idsPage = jobRepository.findIdsByStatus(JobStatus.OPEN, pageable);
+        List<Job> jobs = jobRepository.findByIdsWithDetails(idsPage.getContent());
+        return new PageImpl<>(jobs, pageable, idsPage.getTotalElements());
+    }
+
 }

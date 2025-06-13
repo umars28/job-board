@@ -39,4 +39,8 @@ public class JobCategoryService {
         category.setName(categoryRequest.getName());
         jobCategoryRepository.save(category);
     }
+
+    public List<String> getCategoriesWithJobs() {
+        return jobCategoryRepository.findCategoryNamesWithJobs();
+    }
 }

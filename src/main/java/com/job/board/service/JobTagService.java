@@ -38,4 +38,8 @@ public class JobTagService {
     public void deleteJobTagById(Long id) {
         jobTagRepository.deleteById(id);
     }
+
+    public List<String> getTagsWithJobs() {
+        return jobTagRepository.findTagsWithJobs();
+    }
 }

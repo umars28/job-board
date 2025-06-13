@@ -4,6 +4,8 @@ import com.job.board.entity.Company;
 import com.job.board.entity.Job;
 import com.job.board.entity.JobApplication;
 import com.job.board.enums.JobStatus;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -12,8 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-//@Repository tidak perlu karena sudah auto using kalau extends interfacenya
 public interface JobRepository extends JpaRepository<Job, Long> {
+    @Query("SELECT DISTINCT j.location FROM Job j")
+    List<String> findDistinctLocations();
+
     @Modifying
     @Transactional
     @Query("DELETE FROM Job j WHERE j.company = :company")
@@ -52,4 +56,14 @@ public interface JobRepository extends JpaRepository<Job, Long> {
     long countAllByStatus(JobStatus status);
 
     int countByCompanyAndStatus(Company company, JobStatus status);
+
+    @Query("SELECT j.id FROM Job j WHERE j.status = :status")
+    Page<Long> findIdsByStatus(@Param("status") JobStatus status, Pageable pageable);
+
+    @Query("SELECT DISTINCT j FROM Job j " +
+            "JOIN FETCH j.company " +
+            "JOIN FETCH j.category " +
+            "LEFT JOIN FETCH j.tags " +
+            "WHERE j.id IN :ids")
+    List<Job> findByIdsWithDetails(@Param("ids") List<Long> ids);
 }
