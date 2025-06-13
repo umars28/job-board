@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{public/fragments/app :: app(~{::content})}">
+    <div th:fragment="content">
+        <main class="flex-grow-1 py-4">
+            <div class="container">
+                <h3 class="mb-4">Lamaran yang Sudah Diajukan</h3>
+
+                <!-- Job Card 1 -->
+                <div class="card mb-3 shadow-sm job-card">
+                    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+                        <div class="me-3">
+                            <h5 class="card-title mb-1">Frontend Developer</h5>
+                            <p class="mb-1 text-muted">PT. Teknologi Indonesia · <small>10 Juni 2025</small></p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+                            <span class="badge bg-warning text-dark badge-status">Menunggu</span>
+                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye"></i> Lihat Detail
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Card 2 -->
+                <div class="card mb-3 shadow-sm job-card">
+                    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+                        <div class="me-3">
+                            <h5 class="card-title mb-1">Backend Engineer</h5>
+                            <p class="mb-1 text-muted">CV. Koding Nusantara · <small>5 Juni 2025</small></p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+                            <span class="badge bg-success badge-status">Diproses</span>
+                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye"></i> Lihat Detail
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Card 3 -->
+                <div class="card mb-3 shadow-sm job-card">
+                    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
+                        <div class="me-3">
+                            <h5 class="card-title mb-1">UI/UX Designer</h5>
+                            <p class="mb-1 text-muted">Studio Kreatif · <small>1 Juni 2025</small></p>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
+                            <span class="badge bg-danger badge-status">Ditolak</span>
+                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                <i class="bi bi-eye"></i> Lihat Detail
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>

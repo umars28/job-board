@@ -1,9 +1,7 @@
-package com.job.board.controller;
+package com.job.board.controller.admin;
 
 import com.job.board.entity.Company;
-import com.job.board.entity.JobSeeker;
 import com.job.board.model.CompanyRequest;
-import com.job.board.model.SeekerRequest;
 import com.job.board.service.CompanyService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

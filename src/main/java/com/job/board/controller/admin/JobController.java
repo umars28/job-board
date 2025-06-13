@@ -1,7 +1,6 @@
-package com.job.board.controller;
+package com.job.board.controller.admin;
 
 import com.job.board.entity.Job;
-import com.job.board.entity.JobApplication;
 import com.job.board.enums.JobStatus;
 import com.job.board.repository.CompanyRepository;
 import com.job.board.repository.JobCategoryRepository;
@@ -12,8 +11,6 @@ import com.job.board.service.JobCategoryService;
 import com.job.board.service.JobService;
 import com.job.board.service.JobTagService;
 import com.job.board.util.AuthUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +18,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
-@Controller
 @RequestMapping("/jobs")
+@Controller("adminJobController")
 public class JobController {
 
     private final JobService jobService;

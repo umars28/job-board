@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .chat-container {
+        max-width: 800px;
+        margin: auto;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #dee2e6;
+        border-radius: .5rem;
+        background: #fff;
+        overflow: hidden;
+    }
+    .chat-header {
+        background-color: #0d6efd;
+        color: white;
+        padding: 1rem;
+        font-weight: bold;
+    }
+    .chat-messages {
+        flex-grow: 1;
+        padding: 1rem;
+        overflow-y: auto;
+    }
+    .message {
+        max-width: 75%;
+        margin-bottom: 1rem;
+        padding: .75rem 1rem;
+        border-radius: 1rem;
+        position: relative;
+        font-size: 0.95rem;
+    }
+    .message.company {
+        background-color: #e9ecef;
+        align-self: flex-start;
+        border-bottom-left-radius: 0;
+    }
+    .message.user {
+        background-color: #0d6efd;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 0;
+    }
+    .timestamp {
+        font-size: 0.75rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+        text-align: right;
+    }
+    .chat-input {
+        display: flex;
+        border-top: 1px solid #dee2e6;
+    }
+    .chat-input textarea {
+        flex-grow: 1;
+        border: none;
+        padding: 1rem;
+        resize: none;
+    }
+    .chat-input button {
+        border: none;
+        background: #0d6efd;
+        color: white;
+        padding: 0 1.5rem;
+    }
+    .chat-input textarea:focus, .chat-input button:focus {
+        outline: none;
+        box-shadow: none;
+    }
+</style>
+<body>
+<div th:replace="~{public/fragments/app :: app(~{::content})}">
+    <div th:fragment="content">
+        <div class="chat-container mt-3 shadow-sm">
+            <div class="chat-header">
+                Chat dengan PT. Teknologi Nusantara
+            </div>
+
+            <div class="chat-messages d-flex flex-column" id="chatBox">
+                <div class="message company">
+                    Selamat pagi! Kami telah menerima lamaran Anda.
+                    <div class="timestamp">10:02 AM</div>
+                </div>
+                <div class="message user">
+                    Terima kasih, saya siap jika dibutuhkan wawancara.
+                    <div class="timestamp">10:04 AM</div>
+                </div>
+                <div class="message company">
+                    Baik, kami akan hubungi Anda kembali secepatnya.
+                    <div class="timestamp">10:05 AM</div>
+                </div>
+            </div>
+
+            <div class="chat-input">
+                <textarea id="messageInput" rows="1" placeholder="Ketik pesan..."></textarea>
+                <button onclick="sendMessage()">Kirim</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function sendMessage() {
+        const input = document.getElementById("messageInput");
+        const text = input.value.trim();
+        if (text === "") return;
+
+        const message = document.createElement("div");
+        message.className = "message user";
+        message.innerHTML = `${text}<div class="timestamp">Sekarang</div>`;
+
+        document.getElementById("chatBox").appendChild(message);
+        input.value = "";
+
+        // Auto scroll ke bawah
+        document.getElementById("chatBox").scrollTop = document.getElementById("chatBox").scrollHeight;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{public/fragments/app :: app(~{::content})}">
+    <div th:fragment="content">
+        <section class="py-5">
+            <div class="container px-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <h1 class="mb-3">Frontend Developer</h1>
+                        <h5 class="text-muted">PT Teknologi Digital</h5>
+                        <p class="text-muted">Lokasi: Jakarta</p>
+                        <hr>
+
+                        <h4>Deskripsi Pekerjaan</h4>
+                        <p>Kami mencari seorang Frontend Developer yang mahir dalam ReactJS dan dapat bekerja dalam tim. Anda akan bertanggung jawab membangun antarmuka pengguna yang intuitif dan responsif untuk aplikasi kami.</p>
+
+                        <h4>Kualifikasi</h4>
+                        <ul>
+                            <li>Pendidikan minimal S1 di bidang terkait</li>
+                            <li>Pengalaman minimal 2 tahun sebagai Frontend Developer</li>
+                            <li>Memahami HTML, CSS, JavaScript, dan ReactJS</li>
+                            <li>Memiliki portofolio project adalah nilai tambah</li>
+                        </ul>
+
+                        <h4>Benefit</h4>
+                        <ul>
+                            <li>Gaji kompetitif</li>
+                            <li>BPJS Kesehatan & Ketenagakerjaan</li>
+                            <li>Fleksibilitas kerja hybrid</li>
+                        </ul>
+
+                        <div class="text-end mt-4">
+                            <a href="apply.html" class="btn btn-primary px-4 py-2">Lamar Sekarang</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+</body>
+</html>

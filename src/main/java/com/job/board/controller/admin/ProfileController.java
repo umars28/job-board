@@ -1,8 +1,7 @@
-package com.job.board.controller;
+package com.job.board.controller.admin;
 
 import com.job.board.entity.User;
 import com.job.board.service.UserService;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

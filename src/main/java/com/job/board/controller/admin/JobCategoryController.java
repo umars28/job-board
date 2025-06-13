@@ -1,4 +1,4 @@
-package com.job.board.controller;
+package com.job.board.controller.admin;
 
 import com.job.board.entity.JobCategory;
 import com.job.board.model.CategoryRequest;

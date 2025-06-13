@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:replace="~{public/fragments/app :: app(~{::content})}">
+    <div th:fragment="content">
+        <main class="container mb-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8 col-lg-6">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <h4 class="mb-4 text-center">Edit Profil</h4>
+                            <form action="/profile/update" method="POST" enctype="multipart/form-data">
+
+                                <div class="mb-3">
+                                    <label for="username" class="form-label">Username</label>
+                                    <input type="text" id="username" name="username" class="form-control" value="johndoe" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="firstName" class="form-label">Nama Depan</label>
+                                    <input type="text" id="firstName" name="firstName" class="form-control" value="John" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="lastName" class="form-label">Nama Belakang</label>
+                                    <input type="text" id="lastName" name="lastName" class="form-control" value="Doe" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" id="email" name="email" class="form-control" value="johndoe@email.com" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Kata Sandi</label>
+                                    <input type="password" id="password" name="password" class="form-control" placeholder="Isi jika ingin mengganti password">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="phone" class="form-label">Nomor Telepon</label>
+                                    <input type="text" id="phone" name="phone" class="form-control" value="081234567890">
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="resume" class="form-label">Resume (CV)</label>
+                                    <input type="file" id="resume" name="resume" class="form-control">
+                                    <small class="form-text text-muted">File sebelumnya: <a href="/uploads/resume.pdf" target="_blank">resume.pdf</a></small>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary w-100">Simpan Perubahan</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+</body>
+</html>
