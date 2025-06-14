@@ -9,42 +9,52 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <h4 class="mb-4 text-center">Edit Profil</h4>
-                            <form action="/profile/update" method="POST" enctype="multipart/form-data">
-
+                            <div th:if="${successMessage}" class="alert alert-success" role="alert">
+                                <span th:text="${successMessage}"></span>
+                            </div>
+                            <form th:action="@{/seeker/profile/update}" method="POST" th:object="${user}">
+                                <input type="hidden" th:field="*{id}"/>
                                 <div class="mb-3">
-                                    <label for="username" class="form-label">Username</label>
-                                    <input type="text" id="username" name="username" class="form-control" value="johndoe" required>
+                                    <label class="form-label">Username</label>
+                                    <input type="text" class="form-control" th:field="*{username}" readonly>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="firstName" class="form-label">Nama Depan</label>
-                                    <input type="text" id="firstName" name="firstName" class="form-control" value="John" required>
+                                    <label class="form-label">Nama Depan</label>
+                                    <input type="text" class="form-control" th:field="*{firstName}" required>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="lastName" class="form-label">Nama Belakang</label>
-                                    <input type="text" id="lastName" name="lastName" class="form-control" value="Doe" required>
+                                    <label class="form-label">Nama Belakang</label>
+                                    <input type="text" class="form-control" th:field="*{lastName}" required>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" id="email" name="email" class="form-control" value="johndoe@email.com" required>
+                                    <label class="form-label">Email</label>
+                                    <input type="email" class="form-control" th:field="*{email}" required>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="password" class="form-label">Kata Sandi</label>
-                                    <input type="password" id="password" name="password" class="form-control" placeholder="Isi jika ingin mengganti password">
+                                    <label class="form-label">Kata Sandi</label>
+                                    <input type="password" class="form-control" th:field="*{password}">
+                                    <small class="form-text text-muted">Kosongkan jika tidak ingin mengubah password</small>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="phone" class="form-label">Nomor Telepon</label>
-                                    <input type="text" id="phone" name="phone" class="form-control" value="081234567890">
+                                    <label class="form-label">Nomor Telepon</label>
+                                    <input type="text" class="form-control" th:field="*{jobSeeker.phone}" required>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="resume" class="form-label">Resume (CV)</label>
-                                    <input type="file" id="resume" name="resume" class="form-control">
-                                    <small class="form-text text-muted">File sebelumnya: <a href="/uploads/resume.pdf" target="_blank">resume.pdf</a></small>
+                                    <label class="form-label">Link Resume (CV)</label>
+                                    <input type="url" class="form-control" th:field="*{jobSeeker.resumeUrl}" placeholder="https://" required>
+                                    <small class="form-text text-muted"
+                                           th:if="*{jobSeeker.resumeUrl} != null">
+                                        Link sebelumnya:
+                                        <a th:href="@{*{jobSeeker.resumeUrl}}"
+                                           target="_blank"
+                                           th:text="*{jobSeeker.resumeUrl}"></a>
+                                    </small>
                                 </div>
 
                                 <button type="submit" class="btn btn-primary w-100">Simpan Perubahan</button>

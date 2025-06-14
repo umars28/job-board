@@ -1,9 +1,11 @@
 package com.job.board.service;
 
 import com.job.board.entity.Company;
+import com.job.board.entity.JobSeeker;
 import com.job.board.entity.User;
 import com.job.board.enums.Role;
 import com.job.board.repository.CompanyRepository;
+import com.job.board.repository.SeekerRepository;
 import com.job.board.repository.UserRepository;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,11 +21,13 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CompanyRepository companyRepository;
+    private final SeekerRepository seekerRepository;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, CompanyRepository companyRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, CompanyRepository companyRepository, SeekerRepository seekerRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.companyRepository = companyRepository;
+        this.seekerRepository = seekerRepository;
     }
 
     public User getUserByUsername(String username) {
@@ -49,6 +53,16 @@ public class UserService {
                 existingCompany.setAddress(formCompany.getAddress());
                 existingCompany.setWebsite(formCompany.getWebsite());
                 companyRepository.save(existingCompany);
+            }
+        } else if (existingUser.getRole() == Role.JOB_SEEKER && existingUser.getJobSeeker() != null) {
+            JobSeeker existingJobSeeker = existingUser.getJobSeeker();
+            JobSeeker formJobSeeker = formUser.getJobSeeker();
+
+            if (formJobSeeker != null) {
+                existingJobSeeker.setFullName(formUser.getFirstName()+ " " +formUser.getLastName());
+                existingJobSeeker.setPhone(formJobSeeker.getPhone());
+                existingJobSeeker.setResumeUrl(formJobSeeker.getResumeUrl());
+                seekerRepository.save(existingJobSeeker);
             }
         }
 

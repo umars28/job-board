@@ -16,7 +16,6 @@
             <h2>Ubah Profil</h2>
             <form th:action="@{/profile/update}" method="post" th:object="${user}">
                 <input type="hidden" th:field="*{id}"/>
-
                 <div class="form-group">
                     <label>Username</label>
                     <input type="text" class="form-control" th:field="*{username}" readonly>
