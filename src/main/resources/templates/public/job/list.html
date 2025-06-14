@@ -53,7 +53,14 @@
                                 <p class="card-text" th:text="${job.description}">Description</p>
                                 <div class="mt-auto d-flex justify-content-between">
                                     <small class="text-muted" th:text="'Lokasi: ' + ${job.location}">Location</small>
-                                    <a th:href="@{'/job/detail/' +${job.id}}" target="_blank" class="btn btn-sm btn-outline-primary">Apply</a>
+                                    <a th:if="${appliedJobIds.contains(job.id)}"
+                                       th:href="@{/seeker/applied-jobs}"
+                                       class="btn btn-sm btn-success">Applied</a>
+
+                                    <a th:if="${!appliedJobIds.contains(job.id)}"
+                                       th:href="@{'/job/detail/' + ${job.id}}"
+                                       target="_blank"
+                                       class="btn btn-sm btn-outline-primary">Apply</a>
                                 </div>
                             </div>
                         </div>

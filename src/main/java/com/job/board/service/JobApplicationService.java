@@ -41,4 +41,8 @@ public class JobApplicationService {
     public int countApplicationsByCompany(Company company) {
         return jobApplicationRepository.countByJobCompany(company);
     }
+
+    public List<Long> findAppliedJobIdsByJobSeeker(Long jobSeekerId) {
+        return jobApplicationRepository.findJobIdsByJobSeekerId(jobSeekerId);
+    }
 }

@@ -1,6 +1,8 @@
 package com.job.board.controller.seeker;
 
 import com.job.board.entity.Job;
+import com.job.board.entity.User;
+import com.job.board.service.JobApplicationService;
 import com.job.board.service.JobCategoryService;
 import com.job.board.service.JobService;
 import com.job.board.service.JobTagService;
@@ -20,15 +22,18 @@ public class JobController {
     private final JobService jobService;
     private final JobCategoryService jobCategoryService;
     private final JobTagService jobTagService;
+    private final JobApplicationService jobApplicationService;
 
-    public JobController(JobService jobService, JobCategoryService jobCategoryService, JobTagService jobTagService) {
+    public JobController(JobService jobService, JobCategoryService jobCategoryService, JobTagService jobTagService, JobApplicationService jobApplicationService) {
         this.jobService = jobService;
         this.jobCategoryService = jobCategoryService;
         this.jobTagService = jobTagService;
+        this.jobApplicationService = jobApplicationService;
     }
 
     @GetMapping("/list")
     public String jobList(
+            @ModelAttribute("currentJobSeekerId") Long jobSeekerId,
             @RequestParam(required = false) String location,
             @RequestParam(required = false) String category,
             @RequestParam(required = false) List<String> tags,
@@ -40,18 +45,26 @@ public class JobController {
         List<String> listCategory = jobCategoryService.getCategoriesWithJobs();
         List<String> listTag = jobTagService.getTagsWithJobs();
         Page<Job> pageJob = jobService.findOpenJobs(location, category, tags, keyword, pageable);
+        List<Long> appliedJobIds = jobApplicationService.findAppliedJobIdsByJobSeeker(jobSeekerId);
 
         model.addAttribute("listLocation", listLocation);
         model.addAttribute("listCategory", listCategory);
         model.addAttribute("listTag", listTag);
         model.addAttribute("pageJob", pageJob);
+        model.addAttribute("appliedJobIds", appliedJobIds);
         return "/public/job/list";
     }
 
     @GetMapping("/detail/{id}")
-    public String jobDetail(@PathVariable Long id, Model model) {
+    public String jobDetail(
+            @ModelAttribute("currentJobSeekerId") Long jobSeekerId,
+            @PathVariable Long id,
+            Model model
+    ) {
         Job job = jobService.getJobById(id);
+        List<Long> appliedJobIds = jobApplicationService.findAppliedJobIdsByJobSeeker(jobSeekerId);
         model.addAttribute("job", job);
+        model.addAttribute("appliedJobIds", appliedJobIds);
         return "/public/job/detail";
     }
 
