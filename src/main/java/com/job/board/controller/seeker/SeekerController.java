@@ -17,11 +17,6 @@ public class SeekerController {
         return "/public/seeker/applied-job";
     }
 
-    @GetMapping("/job/applied/success")
-    public String appliedSuccess() {
-        return "/public/seeker/success-apply";
-    }
-
     @GetMapping("/notification")
     public String notification() {
         return "/public/seeker/notification";

@@ -1,24 +1,50 @@
 package com.job.board.controller.seeker;
 
 import com.job.board.entity.Job;
+import com.job.board.service.JobCategoryService;
 import com.job.board.service.JobService;
+import com.job.board.service.JobTagService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequestMapping("/job")
 @Controller("seekerJobController")
 public class JobController {
     private final JobService jobService;
+    private final JobCategoryService jobCategoryService;
+    private final JobTagService jobTagService;
 
-    public JobController(JobService jobService) {
+    public JobController(JobService jobService, JobCategoryService jobCategoryService, JobTagService jobTagService) {
         this.jobService = jobService;
+        this.jobCategoryService = jobCategoryService;
+        this.jobTagService = jobTagService;
     }
 
     @GetMapping("/list")
-    public String jobList() {
+    public String jobList(
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(required = false) String keyword,
+            @PageableDefault(size = 20, sort = "postedAt", direction = Sort.Direction.DESC) Pageable pageable,
+            Model model
+    ) {
+        List<String> listLocation = jobService.getDistinctLocations();
+        List<String> listCategory = jobCategoryService.getCategoriesWithJobs();
+        List<String> listTag = jobTagService.getTagsWithJobs();
+        Page<Job> pageJob = jobService.findOpenJobs(location, category, tags, keyword, pageable);
+
+        model.addAttribute("listLocation", listLocation);
+        model.addAttribute("listCategory", listCategory);
+        model.addAttribute("listTag", listTag);
+        model.addAttribute("pageJob", pageJob);
         return "/public/job/list";
     }
 
@@ -27,5 +53,11 @@ public class JobController {
         Job job = jobService.getJobById(id);
         model.addAttribute("job", job);
         return "/public/job/detail";
+    }
+
+    @PostMapping("/apply/{id}")
+    public String applyJob(@PathVariable Long id) {
+
+        return "redirect:/job/applied/success";
     }
 }
