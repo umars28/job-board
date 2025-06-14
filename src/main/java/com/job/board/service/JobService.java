@@ -11,11 +11,14 @@ import com.job.board.util.AuthUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import static com.job.board.repository.specification.JobSpecification.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -129,10 +132,25 @@ public class JobService {
         return jobRepository.findDistinctLocations();
     }
 
-    public Page<Job> findOpenJobs(Pageable pageable) {
-        Page<Long> idsPage = jobRepository.findIdsByStatus(JobStatus.OPEN, pageable);
-        List<Job> jobs = jobRepository.findByIdsWithDetails(idsPage.getContent());
-        return new PageImpl<>(jobs, pageable, idsPage.getTotalElements());
+    public Page<Job> findOpenJobs(String location, String category, List<String> tags, String keyword, Pageable pageable) {
+        Specification<Job> spec = (root, query, cb) -> cb.conjunction();
+
+        spec = spec.and(statusOpen());
+
+        if (location != null && !location.isBlank()) {
+            spec = spec.and(locationEqual(location));
+        }
+        if (category != null && !category.isBlank()) {
+            spec = spec.and(categoryEqual(category));
+        }
+        if (tags != null && !tags.isEmpty()) {
+            spec = spec.and(tagsIn(tags));
+        }
+        if (keyword != null && !keyword.isBlank()) {
+            spec = spec.and(keywordLike(keyword));
+        }
+
+        return jobRepository.findAll(spec, pageable);
     }
 
 }

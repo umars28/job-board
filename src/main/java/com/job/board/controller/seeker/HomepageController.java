@@ -15,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -36,12 +37,18 @@ public class HomepageController {
     }
 
     @GetMapping
-    public String homepage(Model model,
-                           @PageableDefault(size = 20, sort = "postedAt", direction = Sort.Direction.DESC) Pageable pageable) {
+    public String homepage(
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) List<String> tags,
+            @RequestParam(required = false) String keyword,
+            @PageableDefault(size = 20, sort = "postedAt", direction = Sort.Direction.DESC) Pageable pageable,
+            Model model
+    ) {
         List<String> listLocation = jobService.getDistinctLocations();
         List<String> listCategory = jobCategoryService.getCategoriesWithJobs();
         List<String> listTag = jobTagService.getTagsWithJobs();
-        Page<Job> pageJob = jobService.findOpenJobs(pageable);
+        Page<Job> pageJob = jobService.findOpenJobs(location, category, tags, keyword, pageable);
 
         model.addAttribute("listLocation", listLocation);
         model.addAttribute("listCategory", listCategory);

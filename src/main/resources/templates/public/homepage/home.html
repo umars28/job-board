@@ -17,7 +17,7 @@
               </h1>
               <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
                 <a class="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder" href="#lowongan">Lihat Lowongan</a>
-                <a class="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder" href="profile.html">Update CV</a>
+                <a class="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder" href="profile.html">Lamaran Saya</a>
               </div>
             </div>
           </div>
@@ -28,41 +28,8 @@
     <section class="py-5 bg-light" id="lowongan">
       <div class="container px-5">
         <h2 class="text-center mb-4">Cari Lowongan</h2>
-<!--        <form class="row gy-3 justify-content-center" th:action="@{/}" method="get">-->
-
-<!--          &lt;!&ndash; Baris 1: Selects &ndash;&gt;-->
-<!--          <div class="col-12 col-md-3">-->
-<!--            <select class="form-select select2-location" name="location">-->
-<!--              <option value="">Semua Lokasi</option>-->
-<!--              <option th:each="loc : ${listLocation}" th:value="${loc}" th:text="${loc}"></option>-->
-<!--            </select>-->
-<!--          </div>-->
-
-<!--          <div class="col-12 col-md-3">-->
-<!--            <select class="form-select select2-category" name="category">-->
-<!--              <option value="">Semua Kategori</option>-->
-<!--              <option th:each="cat : ${listCategory}" th:value="${cat}" th:text="${cat}"></option>-->
-<!--            </select>-->
-<!--          </div>-->
-
-<!--          <div class="col-12 col-md-4">-->
-<!--            <select class="form-control select2-tag" name="tags" multiple="multiple">-->
-<!--              <option th:each="tag : ${listTag}" th:value="${tag}" th:text="${tag}"></option>-->
-<!--            </select>-->
-<!--          </div>-->
-
-<!--          <div class="col-12 col-md-6">-->
-<!--            <input type="text" class="form-control" name="keyword" placeholder="Kata kunci (ex: Developer)" />-->
-<!--          </div>-->
-
-<!--          <div class="col-auto">-->
-<!--            <button type="submit" class="btn btn-primary px-4">Cari</button>-->
-<!--          </div>-->
-
-<!--        </form>-->
 
         <form class="row gy-3 justify-content-center" th:action="@{/}" method="get">
-          <!-- Baris 1 -->
           <div class="col-12 col-md-3">
             <select class="form-select select2-location" name="location">
               <option value="">Semua Lokasi</option>
@@ -110,7 +77,7 @@
                 <p class="card-text" th:text="${job.description}">Description</p>
                 <div class="mt-auto d-flex justify-content-between">
                   <small class="text-muted" th:text="'Lokasi: ' + ${job.location}">Location</small>
-                  <a th:href="@{'/jobs/' + ${job.id}}" class="btn btn-sm btn-outline-primary">Lamar</a>
+                  <a th:href="@{'/job/detail/' +${job.id}}" class="btn btn-sm btn-outline-primary">Lamar</a>
                 </div>
               </div>
             </div>
