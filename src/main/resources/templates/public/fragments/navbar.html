@@ -27,9 +27,11 @@
                             <li><a class="dropdown-item" href="/seeker/profile">Profile</a></li>
                             <li><a class="dropdown-item" href="/seeker/job/applied">Applied Jobs</a></li>
                             <li>
-                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="/seeker/notifications">
+                                <a class="dropdown-item d-flex justify-content-between align-items-center" href="/seeker/notification">
                                     Notifications
-                                    <span class="badge bg-danger rounded-pill ms-2">3</span>
+                                    <span class="badge bg-danger rounded-pill ms-2">
+                                        <th:block th:text="${navbarUnreadCount}">0</th:block>
+                                    </span>
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li>

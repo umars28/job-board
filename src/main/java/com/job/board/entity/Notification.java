@@ -22,7 +22,7 @@ public class Notification {
 
     private String link;
 
-    private boolean isRead = false;
+    private Boolean isRead = false;
 
     private LocalDateTime createdAt;
 

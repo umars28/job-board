@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<body>
+<div th:replace="~{admin/fragments/app :: app(~{::content})}">
+  <div th:fragment="content">
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <div class="container-fluid">
+
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">List Notification</h1>
+            <form method="post" th:action="@{/notification/mark-all-read}">
+              <button class="btn btn-primary" type="submit">Mark All as Read</button>
+            </form>
+          </div>
+
+          <div class="card shadow mb-4">
+            <div class="card-body">
+              <ul class="list-group">
+                <li th:each="notification : ${notifications}"
+                    th:classappend="${!notification.isRead} ? 'list-group-item-warning' : ''"
+                    class="list-group-item">
+                  <a th:if="${notification.link != null}"
+                     th:href="@{/notification/redirect/{id}(id=${notification.id})}"
+                     th:text="${notification.message}"></a>
+                  <span th:if="${notification.link == null}" th:text="${notification.message}"></span>
+                  <small class="text-muted d-block"
+                         th:text="${#temporals.format(notification.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

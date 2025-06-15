@@ -19,10 +19,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/login", "/css/**","/dev-seeder/**", "/job/**", "/seeker/**","/vendor/**", "/js/**").permitAll()
+                        .requestMatchers("/","/login", "/css/**","/dev-seeder/**", "/job/list", "/job/detail/**", "/vendor/**", "/js/**").permitAll()
                         .requestMatchers("/jobs/list", "/dashboard").hasAnyRole("ADMIN", "COMPANY")
                         .requestMatchers("/users/**", "/jobs/category/**", "/jobs/tag/**").hasRole("ADMIN")
-                        .requestMatchers("/jobs/create", "/jobs/edit/**", "/jobs/restore/**", "/jobs/archive/**").hasRole("COMPANY")
+                        .requestMatchers("/jobs/create", "/jobs/edit/**", "/jobs/restore/**", "/jobs/archive/**", "/notification/**").hasRole("COMPANY")
+                        .requestMatchers("/seeker/**", "/job/apply/**").hasRole("JOB_SEEKER")
                         .anyRequest().authenticated()
                 )
                 .formLogin(FormLoginConfigurer::disable)
