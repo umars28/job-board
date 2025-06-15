@@ -2,11 +2,9 @@ package com.job.board.service;
 
 import com.job.board.entity.*;
 import com.job.board.enums.ApplicantStatus;
-import com.job.board.repository.JobApplicationRepository;
-import com.job.board.repository.JobRepository;
-import com.job.board.repository.SeekerRepository;
-import com.job.board.repository.UserRepository;
+import com.job.board.repository.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,12 +16,16 @@ public class JobApplicationService {
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
     private final SeekerRepository seekerRepository;
+    private final NotificationRepository notificationRepository;
+    private final NotificationService notificationService;
 
-    public JobApplicationService(JobApplicationRepository jobApplicationRepository, UserRepository userRepository, JobRepository jobRepository, SeekerRepository seekerRepository) {
+    public JobApplicationService(JobApplicationRepository jobApplicationRepository, UserRepository userRepository, JobRepository jobRepository, SeekerRepository seekerRepository, NotificationRepository notificationRepository, NotificationService notificationService) {
         this.jobApplicationRepository = jobApplicationRepository;
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
         this.seekerRepository = seekerRepository;
+        this.notificationRepository = notificationRepository;
+        this.notificationService = notificationService;
     }
 
     public List<JobApplication> getApplicantsByJobId(Long id) {
@@ -34,12 +36,16 @@ public class JobApplicationService {
         return jobApplicationRepository.findByJobIdAndApplicantStatus(id, status);
     }
 
+    @Transactional
     public JobApplication updateApplicationStatus(Long applicationId, ApplicantStatus newStatus) {
         JobApplication application = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Application not found"));
 
         application.setApplicantStatus(newStatus);
-        return jobApplicationRepository.save(application);
+        JobApplication updatedApplication = jobApplicationRepository.save(application);
+
+        notificationService.notifyJobSeekerStatusChanged(updatedApplication);
+        return updatedApplication;
     }
 
     public long getTotalApplications() {
@@ -59,6 +65,8 @@ public class JobApplicationService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return jobApplicationRepository.findByJobSeekerId(user.getJobSeeker().getId());
     }
+
+    @Transactional
     public void applyForJob(Long jobId, String username) {
         Job job = jobRepository.findById(jobId)
                 .orElseThrow(() -> new RuntimeException("Job not found"));
@@ -76,5 +84,6 @@ public class JobApplicationService {
         application.setAppliedAt(LocalDateTime.now());
 
         jobApplicationRepository.save(application);
+        notificationService.notifyCompanyJobApplied(job, seeker);
     }
 }
