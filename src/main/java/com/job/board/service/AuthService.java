@@ -5,6 +5,8 @@ import com.job.board.model.LoginRequest;
 import com.job.board.repository.UserRepository;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,6 +46,17 @@ public class AuthService {
         }
         return false;
     }
+
+    public boolean isJobSeeker(Authentication auth) {
+        if (auth == null) {
+            return false;
+        }
+
+        return auth.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch(role -> role.equals("ROLE_JOB_SEEKER"));
+    }
+
 
     public void logout(HttpSession session) {
         SecurityContextHolder.clearContext();
