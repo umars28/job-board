@@ -1,7 +1,6 @@
 package com.job.board.controller.seeker;
 
 import com.job.board.entity.Job;
-import com.job.board.entity.User;
 import com.job.board.service.JobApplicationService;
 import com.job.board.service.JobCategoryService;
 import com.job.board.service.JobService;
@@ -14,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RequestMapping("/job")
@@ -69,8 +69,17 @@ public class JobController {
     }
 
     @PostMapping("/apply/{id}")
-    public String applyJob(@PathVariable Long id) {
+    public String applyJob(@PathVariable Long id, Principal principal) {
+        String username = principal.getName();
+        jobApplicationService.applyForJob(id, username);
+        return "redirect:/job/apply/success?successApply=true";
+    }
 
-        return "redirect:/job/applied/success";
+    @GetMapping("/apply/success")
+    public String applySuccess(@RequestParam(value = "successApply", required = false, defaultValue = "false") boolean success) {
+        if (!success) {
+            return "redirect:/";
+        }
+        return "/public/feedback/success-apply";
     }
 }

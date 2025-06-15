@@ -7,48 +7,32 @@
             <div class="container">
                 <h3 class="mb-4">Lamaran yang Sudah Diajukan</h3>
 
-                <!-- Job Card 1 -->
-                <div class="card mb-3 shadow-sm job-card">
-                    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
-                        <div class="me-3">
-                            <h5 class="card-title mb-1">Frontend Developer</h5>
-                            <p class="mb-1 text-muted">PT. Teknologi Indonesia · <small>10 Juni 2025</small></p>
-                        </div>
-                        <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
-                            <span class="badge bg-warning text-dark badge-status">Menunggu</span>
-                            <a href="#" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-eye"></i> Lihat Detail
-                            </a>
-                        </div>
-                    </div>
+                <div th:if="${#lists.isEmpty(applications)}">
+                    <p class="text-muted">Belum ada lamaran yang diajukan.</p>
                 </div>
 
-                <!-- Job Card 2 -->
-                <div class="card mb-3 shadow-sm job-card">
+                <div th:each="app : ${applications}" class="card mb-3 shadow-sm job-card">
                     <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
                         <div class="me-3">
-                            <h5 class="card-title mb-1">Backend Engineer</h5>
-                            <p class="mb-1 text-muted">CV. Koding Nusantara · <small>5 Juni 2025</small></p>
+                            <h5 class="card-title mb-1" th:text="${app.job.title}">Job Title</h5>
+                            <p class="mb-1 text-muted">
+                                <span th:text="${app.job.company.name}">Company Name</span> ·
+                                <small th:text="${#temporals.format(app.appliedAt, 'dd MMM yyyy')}">Tanggal</small>
+                            </p>
                         </div>
                         <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
-                            <span class="badge bg-success badge-status">Diproses</span>
-                            <a href="#" class="btn btn-outline-primary btn-sm">
-                                <i class="bi bi-eye"></i> Lihat Detail
-                            </a>
-                        </div>
-                    </div>
-                </div>
+                            <span class="badge"
+                                  th:classappend="
+                                    ${app.applicantStatus.name() == 'APPLIED'} ? ' bg-warning text-dark' :
+                                    (${app.applicantStatus.name() == 'REVIEWING'} ? ' bg-info text-dark' :
+                                    (${app.applicantStatus.name() == 'INTERVIEW'} ? ' bg-primary' :
+                                    (${app.applicantStatus.name() == 'OFFERED'} ? ' bg-success' :
+                                    (${app.applicantStatus.name() == 'ACCEPTED'} ? ' bg-success' :
+                                    (${app.applicantStatus.name() == 'REJECTED'} ? ' bg-danger' :
+                                    (${app.applicantStatus.name() == 'WITHDRAWN'} ? ' bg-secondary' : ' bg-light'))))))"
+                                  th:text="${app.applicantStatus}">Status</span>
 
-                <!-- Job Card 3 -->
-                <div class="card mb-3 shadow-sm job-card">
-                    <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
-                        <div class="me-3">
-                            <h5 class="card-title mb-1">UI/UX Designer</h5>
-                            <p class="mb-1 text-muted">Studio Kreatif · <small>1 Juni 2025</small></p>
-                        </div>
-                        <div class="d-flex align-items-center gap-2 mt-2 mt-md-0">
-                            <span class="badge bg-danger badge-status">Ditolak</span>
-                            <a href="#" class="btn btn-outline-primary btn-sm">
+                            <a th:href="@{'/job/detail/' + ${app.job.id}}" class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-eye"></i> Lihat Detail
                             </a>
                         </div>

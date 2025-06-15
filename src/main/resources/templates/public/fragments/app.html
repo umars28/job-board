@@ -16,12 +16,11 @@
 
 <body class="d-flex flex-column h-100">
 <main class="flex-shrink-0">
-
     <div th:replace="~{public/fragments/navbar :: navbar}"></div>
     <div th:insert="${content}"></div>
-    <div th:replace="~{public/fragments/footer :: footer}"></div>
-    <div th:replace="~{public/fragments/script :: scripts}"></div>
 </main>
+<div th:replace="~{public/fragments/footer :: footer}"></div>
+<div th:replace="~{public/fragments/script :: scripts}"></div>
 </body>
 
 </html>

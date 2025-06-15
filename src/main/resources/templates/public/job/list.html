@@ -54,8 +54,8 @@
                                 <div class="mt-auto d-flex justify-content-between">
                                     <small class="text-muted" th:text="'Lokasi: ' + ${job.location}">Location</small>
                                     <a th:if="${appliedJobIds.contains(job.id)}"
-                                       th:href="@{/seeker/applied-jobs}"
-                                       class="btn btn-sm btn-success">Applied</a>
+                                       th:href="@{/seeker/job/applied}"
+                                       class="btn btn-sm btn-success">View Application</a>
 
                                     <a th:if="${!appliedJobIds.contains(job.id)}"
                                        th:href="@{'/job/detail/' + ${job.id}}"

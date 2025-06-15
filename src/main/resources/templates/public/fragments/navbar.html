@@ -18,9 +18,16 @@
                     </li>
 
                     <li class="nav-item" th:if="${#authorization.expression('isAuthenticated() and hasRole(''JOB_SEEKER'')')}">
-                        <a class="nav-link d-flex align-items-center py-2" th:href="@{/seeker/profile}">
+                        <a class="nav-link dropdown-toggle" href="#" id="seekerProfileDropdown"
+                           role="button" data-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person-circle fs-5"></i>
                         </a>
+                        <ul class="dropdown-menu dropdown-menu-end"
+                            aria-labelledby="seekerProfileDropdown">
+                            <li><a class="dropdown-item" href="/seeker/profile">Profile</a></li>
+                            <li><a class="dropdown-item" href="/seeker/job/applied">Applied Jobs</a></li>
+                            <li><a class="dropdown-item" href="/seeker/notifications">Notifications</a></li>
+                        </ul>
                     </li>
                 </ul>
             </div>

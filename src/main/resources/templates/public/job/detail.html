@@ -18,8 +18,8 @@
 
                         <div class="text-end mt-4">
                             <a th:if="${appliedJobIds.contains(job.id)}"
-                               th:href="@{/seeker/applied-jobs}"
-                               class="btn btn-success px-4 py-2">Applied</a>
+                               th:href="@{/seeker/job/applied}"
+                               class="btn btn-success px-4 py-2">View Application</a>
 
                             <form th:if="${!appliedJobIds.contains(job.id)}"
                                   th:action="@{'/job/apply/' + ${job.id}}"

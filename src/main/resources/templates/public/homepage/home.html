@@ -17,7 +17,7 @@
               </h1>
               <div class="d-grid gap-3 d-sm-flex justify-content-sm-center justify-content-xxl-start mb-3">
                 <a class="btn btn-primary btn-lg px-5 py-3 me-sm-3 fs-6 fw-bolder" href="#lowongan">Lihat Lowongan</a>
-                <a class="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder" href="profile.html">Lamaran Saya</a>
+                <a class="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder" href="/seeker/job/applied">Lamaran Saya</a>
               </div>
             </div>
           </div>
@@ -77,8 +77,8 @@
                 <div class="mt-auto d-flex justify-content-between">
                   <small class="text-muted" th:text="'Lokasi: ' + ${job.location}">Location</small>
                   <a th:if="${appliedJobIds.contains(job.id)}"
-                     th:href="@{/seeker/applied-jobs}"
-                     class="btn btn-sm btn-success">Applied</a>
+                     th:href="@{/seeker/job/applied}"
+                     class="btn btn-sm btn-success">View Application</a>
 
                   <a th:if="${!appliedJobIds.contains(job.id)}"
                      th:href="@{'/job/detail/' + ${job.id}}"
