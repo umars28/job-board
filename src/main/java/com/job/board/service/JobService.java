@@ -16,6 +16,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import static com.job.board.repository.specification.JobSpecification.*;
 
 import java.util.Collections;
@@ -28,13 +30,15 @@ public class JobService {
     private final CompanyRepository companyRepository;
     private final CompanyService companyService;
     private final AuthUtil authUtil;
+    private final ElasticsearchDocIndexService elasticsearchDocIndexService;
 
-    public JobService(JobRepository jobRepository, JobCategoryRepository jobCategoryRepository, CompanyRepository companyRepository, CompanyService companyService, AuthUtil authUtil) {
+    public JobService(JobRepository jobRepository, JobCategoryRepository jobCategoryRepository, CompanyRepository companyRepository, CompanyService companyService, AuthUtil authUtil, ElasticsearchDocIndexService elasticsearchDocIndexService) {
         this.jobRepository = jobRepository;
         this.jobCategoryRepository = jobCategoryRepository;
         this.companyRepository = companyRepository;
         this.companyService = companyService;
         this.authUtil = authUtil;
+        this.elasticsearchDocIndexService = elasticsearchDocIndexService;
     }
 
     public List<Job> getJobsFiltered(String status) {
@@ -68,20 +72,34 @@ public class JobService {
         return job;
     }
 
+    @Transactional
     public void archiveJob(Long id) {
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
         authUtil.authorizeCompanyAccessToJob(job);
         job.setStatus(JobStatus.ARCHIVED);
         jobRepository.save(job);
+
+        try {
+            elasticsearchDocIndexService.deleteJobFromIndex(id);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete index job in Elasticsearch", e);
+        }
     }
 
+    @Transactional
     public void restoreJob(Long id) {
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
         authUtil.authorizeCompanyAccessToJob(job);
         job.setStatus(JobStatus.OPEN);
         jobRepository.save(job);
+
+        try {
+            elasticsearchDocIndexService.indexJob(job);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to restore index job in Elasticsearch", e);
+        }
     }
 
     public Job getJobById(Long id) {
@@ -89,14 +107,22 @@ public class JobService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid job ID: " + id));
     }
 
+    @Transactional
     public void saveJob(Job job) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         Company company = companyService.findByUsername(username);
         job.setCompany(company);
         jobRepository.save(job);
+
+        try {
+            elasticsearchDocIndexService.indexJob(job);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to index job in Elasticsearch", e);
+        }
     }
 
+    @Transactional
     public void updateJob(Long id, Job updatedJob) {
         Job existingJob = jobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid job ID: " + id));
@@ -118,6 +144,12 @@ public class JobService {
         existingJob.setTags(updatedJob.getTags());
 
         jobRepository.save(existingJob);
+
+        try {
+            elasticsearchDocIndexService.indexJob(existingJob);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update index job in Elasticsearch", e);
+        }
     }
 
     public long getTotalActiveJobPostings() {
