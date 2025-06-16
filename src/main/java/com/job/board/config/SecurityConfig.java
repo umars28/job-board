@@ -18,8 +18,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf.ignoringRequestMatchers("/elasticsearch/**"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/login", "/css/**","/dev-seeder/**", "/job/list", "/job/detail/**", "/vendor/**", "/js/**").permitAll()
+                        .requestMatchers("/","/login", "/css/**","/dev-seeder/**", "/job/list", "/job/detail/**", "/vendor/**", "/js/**", "/elasticsearch/**").permitAll()
                         .requestMatchers("/jobs/list", "/dashboard").hasAnyRole("ADMIN", "COMPANY")
                         .requestMatchers("/users/**", "/jobs/category/**", "/jobs/tag/**").hasRole("ADMIN")
                         .requestMatchers("/jobs/create", "/jobs/edit/**", "/jobs/restore/**", "/jobs/archive/**", "/notification/**").hasRole("COMPANY")

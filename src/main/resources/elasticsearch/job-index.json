@@ -1,0 +1,50 @@
+{
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "long"
+      },
+      "title": {
+        "type": "text",
+        "analyzer": "standard",
+        "fields": {
+          "keyword": {
+            "type": "keyword",
+            "ignore_above": 256
+          }
+        }
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "standard"
+      },
+      "location": {
+        "type": "keyword"
+      },
+      "postedAt": {
+        "type": "date"
+      },
+      "status": {
+        "type": "keyword"
+      },
+      "expiredAt": {
+        "type": "date"
+      },
+      "company": {
+        "properties": {
+          "id": { "type": "long" },
+          "name": { "type": "keyword" }
+        }
+      },
+      "category": {
+        "properties": {
+          "id": { "type": "long" },
+          "name": { "type": "keyword" }
+        }
+      },
+      "tags": {
+        "type": "keyword"
+      }
+    }
+  }
+}

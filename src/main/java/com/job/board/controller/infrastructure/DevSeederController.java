@@ -1,4 +1,4 @@
-package com.job.board.controller.admin;
+package com.job.board.controller.infrastructure;
 
 import com.job.board.entity.*;
 import com.job.board.enums.ApplicantStatus;
