@@ -17,12 +17,18 @@ public class ElasticsearchIndexJobController {
     @PostMapping("/create")
     public String createIndex() throws Exception {
         elasticsearchIndexService.createIndex();
-        return "Index created";
+        return "✅ Index created.";
     }
 
     @DeleteMapping("/delete")
     public String deleteIndex() throws Exception {
         elasticsearchIndexService.deleteIndex();
         return "Index deleted";
+    }
+
+    @PostMapping("/reindex-all")
+    public String reindexAll() throws Exception {
+        int total = elasticsearchIndexService.reindexAllJobs();
+        return "✅ Reindex selesai. Total jobs: " + total;
     }
 }

@@ -5,6 +5,7 @@ import com.job.board.enums.ApplicantStatus;
 import com.job.board.enums.JobStatus;
 import com.job.board.enums.Role;
 import com.job.board.repository.*;
+import com.job.board.service.ElasticsearchDocIndexService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,8 +27,9 @@ public class DevSeederController {
     private final SeekerRepository seekerRepository;
     private final JobRepository jobRepository;
     private final JobApplicationRepository jobApplicationRepository;
+    private final ElasticsearchDocIndexService elasticsearchDocIndexService;
 
-    public DevSeederController(UserRepository userRepository, JobCategoryRepository jobCategoryRepository, PasswordEncoder passwordEncoder, JobTagRepository jobTagRepository, CompanyRepository companyRepository, SeekerRepository seekerRepository, JobRepository jobRepository, JobApplicationRepository jobApplicationRepository) {
+    public DevSeederController(UserRepository userRepository, JobCategoryRepository jobCategoryRepository, PasswordEncoder passwordEncoder, JobTagRepository jobTagRepository, CompanyRepository companyRepository, SeekerRepository seekerRepository, JobRepository jobRepository, JobApplicationRepository jobApplicationRepository, ElasticsearchDocIndexService elasticsearchDocIndexService) {
         this.userRepository = userRepository;
         this.jobCategoryRepository = jobCategoryRepository;
         this.passwordEncoder = passwordEncoder;
@@ -36,6 +38,7 @@ public class DevSeederController {
         this.seekerRepository = seekerRepository;
         this.jobRepository = jobRepository;
         this.jobApplicationRepository = jobApplicationRepository;
+        this.elasticsearchDocIndexService = elasticsearchDocIndexService;
     }
 
     @GetMapping("/seed-admin")
@@ -291,8 +294,17 @@ public class DevSeederController {
             }
 
             jobRepository.saveAll(jobs);
-            System.out.println("✅ 50 Jobs seeded successfully.");
-            return "✅ 50 Jobs Seeded Successfully.";
+
+            for (Job job : jobs) {
+                try {
+                    elasticsearchDocIndexService.indexJob(job);
+                } catch (Exception e) {
+                    throw new RuntimeException("Failed to index job in Elasticsearch", e);
+                }
+            }
+
+            System.out.println("✅ 50 Jobs seeded & Indexing successfully.");
+            return "✅ 50 Jobs Seeded & Indexing Successfully.";
         }
 
         return "ℹ️ Jobs Already Exist In The DB.";
