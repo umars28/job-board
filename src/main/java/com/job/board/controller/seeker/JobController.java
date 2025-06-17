@@ -1,6 +1,7 @@
 package com.job.board.controller.seeker;
 
 import com.job.board.entity.Job;
+import com.job.board.model.JobDocument;
 import com.job.board.service.JobApplicationService;
 import com.job.board.service.JobCategoryService;
 import com.job.board.service.JobService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
 
@@ -40,11 +42,13 @@ public class JobController {
             @RequestParam(required = false) String keyword,
             @PageableDefault(size = 20, sort = "postedAt", direction = Sort.Direction.DESC) Pageable pageable,
             Model model
-    ) {
+    ) throws IOException {
         List<String> listLocation = jobService.getDistinctLocations();
         List<String> listCategory = jobCategoryService.getCategoriesWithJobs();
         List<String> listTag = jobTagService.getTagsWithJobs();
-        Page<Job> pageJob = jobService.findOpenJobs(location, category, tags, keyword, pageable);
+
+        Page<JobDocument> pageJob = jobService.findOpenJobsWithElasticsearch(location, category, tags, keyword, pageable);
+
         List<Long> appliedJobIds = jobApplicationService.findAppliedJobIdsByJobSeeker(jobSeekerId);
 
         model.addAttribute("listLocation", listLocation);
@@ -54,6 +58,7 @@ public class JobController {
         model.addAttribute("appliedJobIds", appliedJobIds);
         return "/public/job/list";
     }
+
 
     @GetMapping("/detail/{id}")
     public String jobDetail(

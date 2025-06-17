@@ -1,13 +1,17 @@
 package com.job.board.service;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.job.board.entity.Company;
 import com.job.board.entity.Job;
-import com.job.board.entity.JobApplication;
 import com.job.board.enums.JobStatus;
-import com.job.board.repository.CompanyRepository;
+import com.job.board.model.JobDocument;
 import com.job.board.repository.JobCategoryRepository;
 import com.job.board.repository.JobRepository;
 import com.job.board.util.AuthUtil;
+import org.elasticsearch.client.Request;
+import org.elasticsearch.client.Response;
+import org.elasticsearch.client.RestClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -20,25 +24,28 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.job.board.repository.specification.JobSpecification.*;
 
-import java.util.Collections;
-import java.util.List;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @Service
 public class JobService {
     private final JobRepository jobRepository;
     private final JobCategoryRepository jobCategoryRepository;
-    private final CompanyRepository companyRepository;
     private final CompanyService companyService;
     private final AuthUtil authUtil;
     private final ElasticsearchDocIndexService elasticsearchDocIndexService;
+    private final RestClient restClient;
+    private final ObjectMapper objectMapper;
 
-    public JobService(JobRepository jobRepository, JobCategoryRepository jobCategoryRepository, CompanyRepository companyRepository, CompanyService companyService, AuthUtil authUtil, ElasticsearchDocIndexService elasticsearchDocIndexService) {
+    public JobService(JobRepository jobRepository, JobCategoryRepository jobCategoryRepository, CompanyService companyService, AuthUtil authUtil, ElasticsearchDocIndexService elasticsearchDocIndexService, RestClient restClient, ObjectMapper objectMapper) {
         this.jobRepository = jobRepository;
         this.jobCategoryRepository = jobCategoryRepository;
-        this.companyRepository = companyRepository;
         this.companyService = companyService;
         this.authUtil = authUtil;
         this.elasticsearchDocIndexService = elasticsearchDocIndexService;
+        this.restClient = restClient;
+        this.objectMapper = objectMapper;
     }
 
     public List<Job> getJobsFiltered(String status) {
@@ -68,8 +75,7 @@ public class JobService {
     }
 
     public Job jobDetails(Long id) {
-        Job job = jobRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid job ID: " + id));
-        return job;
+        return jobRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid job ID: " + id));
     }
 
     @Transactional
@@ -113,6 +119,14 @@ public class JobService {
         String username = auth.getName();
         Company company = companyService.findByUsername(username);
         job.setCompany(company);
+
+        if (job.getCategory() != null && job.getCategory().getId() != null) {
+            jobCategoryRepository.findById(job.getCategory().getId())
+                    .ifPresent(job::setCategory);
+        } else {
+            job.setCategory(null);
+        }
+
         jobRepository.save(job);
 
         try {
@@ -184,5 +198,84 @@ public class JobService {
 
         return jobRepository.findAll(spec, pageable);
     }
+
+    public Page<JobDocument> findOpenJobsWithElasticsearch(
+            String location,
+            String category,
+            List<String> tags,
+            String keyword,
+            Pageable pageable
+    ) throws IOException {
+
+        Map<String, Object> boolQuery = new HashMap<>();
+        List<Object> must = new ArrayList<>();
+
+        if (keyword != null && !keyword.isBlank()) {
+            Map<String, Object> multiMatch = Map.of(
+                    "multi_match", Map.of(
+                            "query", keyword.toLowerCase(),
+                            "fields", List.of(
+                                    "title.ngram",
+                                    "title.edge",
+                                    "description.ngram",
+                                    "description.edge"
+                            )
+                    )
+            );
+            must.add(multiMatch);
+        }
+
+        if (location != null && !location.isBlank()) {
+            Map<String, Object> term = Map.of(
+                    "term", Map.of("location", location)
+            );
+            must.add(term);
+        }
+
+        if (category != null && !category.isBlank()) {
+            Map<String, Object> term = Map.of(
+                    "term", Map.of("categoryName", category)
+            );
+            must.add(term);
+        }
+
+        if (tags != null && !tags.isEmpty()) {
+            Map<String, Object> terms = Map.of(
+                    "terms", Map.of("tags", tags)
+            );
+            must.add(terms);
+        }
+
+        boolQuery.put("must", must);
+        Map<String, Object> query = Map.of("bool", boolQuery);
+
+        Map<String, Object> fullQuery = new HashMap<>();
+        fullQuery.put("query", query);
+        fullQuery.put("from", pageable.getPageNumber() * pageable.getPageSize());
+        fullQuery.put("size", pageable.getPageSize());
+
+        // Convert ke JSON
+        String jsonQuery = objectMapper.writeValueAsString(fullQuery);
+
+        // Panggil Elasticsearch
+        Request request = new Request("POST", "/jobs/_search");
+        request.setJsonEntity(jsonQuery);
+
+        Response response = restClient.performRequest(request);
+        String json = new String(response.getEntity().getContent().readAllBytes(), StandardCharsets.UTF_8);
+
+        // Parse hasil
+        List<JobDocument> jobs = new ArrayList<>();
+        JsonNode hits = objectMapper.readTree(json).path("hits").path("hits");
+        for (JsonNode hit : hits) {
+            JobDocument job = objectMapper.treeToValue(hit.path("_source"), JobDocument.class);
+            jobs.add(job);
+        }
+
+        long total = objectMapper.readTree(json).path("hits").path("total").path("value").asLong();
+
+        return new PageImpl<>(jobs, pageable, total);
+    }
+
 
 }

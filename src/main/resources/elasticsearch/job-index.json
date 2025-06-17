@@ -1,50 +1,79 @@
 {
+  "settings": {
+    "index": {
+      "max_ngram_diff": 11
+    },
+    "analysis": {
+      "tokenizer": {
+        "ngram_tokenizer": {
+          "type": "ngram",
+          "min_gram": 2,
+          "max_gram": 12,
+          "token_chars": ["letter", "digit"]
+        },
+        "edge_ngram_tokenizer": {
+          "type": "edge_ngram",
+          "min_gram": 1,
+          "max_gram": 12,
+          "token_chars": ["letter", "digit"]
+        }
+      },
+      "analyzer": {
+        "ngram_analyzer": {
+          "type": "custom",
+          "tokenizer": "ngram_tokenizer",
+          "filter": ["lowercase"]
+        },
+        "edge_ngram_analyzer": {
+          "type": "custom",
+          "tokenizer": "edge_ngram_tokenizer",
+          "filter": ["lowercase"]
+        },
+        "standard_lowercase": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": ["lowercase"]
+        }
+      }
+    }
+  },
   "mappings": {
     "properties": {
-      "id": {
-        "type": "long"
-      },
       "title": {
         "type": "text",
-        "analyzer": "standard",
         "fields": {
-          "keyword": {
-            "type": "keyword",
-            "ignore_above": 256
+          "ngram": {
+            "type": "text",
+            "analyzer": "ngram_analyzer",
+            "search_analyzer": "standard_lowercase"
+          },
+          "edge": {
+            "type": "text",
+            "analyzer": "edge_ngram_analyzer",
+            "search_analyzer": "standard_lowercase"
           }
         }
       },
       "description": {
         "type": "text",
-        "analyzer": "standard"
-      },
-      "location": {
-        "type": "keyword"
-      },
-      "postedAt": {
-        "type": "date"
-      },
-      "status": {
-        "type": "keyword"
-      },
-      "expiredAt": {
-        "type": "date"
-      },
-      "company": {
-        "properties": {
-          "id": { "type": "long" },
-          "name": { "type": "keyword" }
+        "fields": {
+          "ngram": {
+            "type": "text",
+            "analyzer": "ngram_analyzer",
+            "search_analyzer": "standard_lowercase"
+          },
+          "edge": {
+            "type": "text",
+            "analyzer": "edge_ngram_analyzer",
+            "search_analyzer": "standard_lowercase"
+          }
         }
       },
-      "category": {
-        "properties": {
-          "id": { "type": "long" },
-          "name": { "type": "keyword" }
-        }
-      },
-      "tags": {
-        "type": "keyword"
-      }
+      "location": { "type": "keyword" },
+      "status": { "type": "keyword" },
+      "companyName": { "type": "keyword" },
+      "categoryName": { "type": "keyword" },
+      "tags": { "type": "keyword" }
     }
   }
 }

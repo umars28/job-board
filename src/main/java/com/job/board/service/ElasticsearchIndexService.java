@@ -2,6 +2,7 @@ package com.job.board.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.job.board.entity.Job;
+import com.job.board.entity.JobTag;
 import com.job.board.model.JobDocument;
 import com.job.board.repository.JobRepository;
 import lombok.RequiredArgsConstructor;
@@ -76,6 +77,10 @@ public class ElasticsearchIndexService {
             doc.setCategoryName(
                     job.getCategory() != null ? job.getCategory().getName() : null
             );
+            List<String> tagNames = job.getTags().stream()
+                    .map(JobTag::getName)
+                    .toList();
+            doc.setTags(tagNames);
 
             bulkRequestBody.append("{ \"index\" : { \"_index\" : \"jobs\", \"_id\" : \"")
                     .append(job.getId()).append("\" } }\n");

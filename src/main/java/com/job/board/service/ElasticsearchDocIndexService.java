@@ -2,12 +2,14 @@ package com.job.board.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.job.board.entity.Job;
+import com.job.board.entity.JobTag;
 import com.job.board.model.JobDocument;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.RestClient;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class ElasticsearchDocIndexService {
@@ -29,6 +31,10 @@ public class ElasticsearchDocIndexService {
         doc.setStatus(job.getStatus().name());
         doc.setCompanyName(job.getCompany().getName());
         doc.setCategoryName(job.getCategory() != null ? job.getCategory().getName() : null);
+        List<String> tagNames = job.getTags().stream()
+                .map(JobTag::getName)
+                .toList();
+        doc.setTags(tagNames);
 
         String jobJson = objectMapper.writeValueAsString(doc);
 

@@ -2,6 +2,8 @@ package com.job.board.model;
 
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class JobDocument {
     private Long id;
@@ -11,5 +13,6 @@ public class JobDocument {
     private String status;
     private String companyName;
     private String categoryName;
+    private List<String> tags;
 }
 
