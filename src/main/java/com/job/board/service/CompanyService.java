@@ -1,16 +1,15 @@
 package com.job.board.service;
 
-import com.job.board.annotation.AuditLog;
 import com.job.board.entity.Company;
-import com.job.board.entity.JobSeeker;
 import com.job.board.entity.User;
 import com.job.board.enums.Role;
 import com.job.board.model.CompanyRequest;
-import com.job.board.model.SeekerRequest;
 import com.job.board.repository.CompanyRepository;
 import com.job.board.repository.JobApplicationRepository;
 import com.job.board.repository.JobRepository;
 import com.job.board.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +18,8 @@ import java.util.List;
 
 @Service
 public class CompanyService {
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
+
     private final CompanyRepository companyRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -33,9 +34,11 @@ public class CompanyService {
         this.jobRepository = jobRepository;
     }
 
-    @AuditLog
     public List<Company> getAllCompanies() {
-        return companyRepository.findAllWithJobsAndUser();
+        auditLogger.info("AUDIT - Start retrieving companies");
+        List<Company> companies =  companyRepository.findAllWithJobsAndUser();
+        auditLogger.info("AUDIT - Retrieved companies count: {}", companies.size());
+        return companies;
     }
 
     @Transactional
@@ -55,7 +58,16 @@ public class CompanyService {
         company.setName(companyRequest.getFirstName() + " " + companyRequest.getLastName());
         company.setAddress(companyRequest.getAddress());
         company.setWebsite(companyRequest.getWebsite());
-        companyRepository.save(company);
+        Company savedCompany = companyRepository.save(company);
+
+        auditLogger.info(
+                "AUDIT - Created company id={} name={} with user id={} username={}",
+                savedCompany.getId(),
+                savedCompany.getName(),
+                savedUser.getId(),
+                savedUser.getUsername()
+        );
+
     }
 
     public CompanyRequest getCompanyRequestById(Long companyId) {
@@ -71,6 +83,12 @@ public class CompanyService {
         request.setEmail(user.getEmail());
         request.setAddress(company.getAddress());
         request.setWebsite(company.getWebsite());
+
+        auditLogger.info(
+                "AUDIT - Fetched CompanyRequest for companyId={} (username={})",
+                companyId,
+                user.getUsername()
+        );
 
         return request;
     }
@@ -92,6 +110,15 @@ public class CompanyService {
 
         userRepository.save(user);
         companyRepository.save(company);
+
+        auditLogger.info(
+                "AUDIT - Updated company id={} (new username={}, name={}, address={}, website={})",
+                companyId,
+                user.getUsername(),
+                company.getName(),
+                company.getAddress(),
+                company.getWebsite()
+        );
     }
 
     @Transactional
@@ -106,6 +133,12 @@ public class CompanyService {
         if (user != null) {
             userRepository.delete(user);
         }
+
+        auditLogger.info(
+                "AUDIT - Deleted company id={} (username={}) and related jobs/applications",
+                id,
+                user != null ? user.getUsername() : "null"
+        );
     }
 
     public long getTotalCompanies() {

@@ -25,6 +25,7 @@ public class CompanyController {
 
     @GetMapping("/company")
     public String companyList(Model model) {
+        auditLogger.info("AUDIT - Request GET /users/company received");
         List<Company> companyList = companyService.getAllCompanies();
         model.addAttribute("company", companyList);
         return "/admin/company/index";
@@ -38,6 +39,7 @@ public class CompanyController {
     @PostMapping("/company/save")
     public String saveCompany(@ModelAttribute CompanyRequest companyRequest, RedirectAttributes redirectAttributes) {
         try {
+            auditLogger.info("AUDIT - Request POST /users/company/save received");
             companyService.saveCompany(companyRequest);
             redirectAttributes.addFlashAttribute("message", "Company berhasil ditambahkan.");
         } catch (Exception e) {
@@ -48,6 +50,7 @@ public class CompanyController {
 
     @GetMapping("/company/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
+        auditLogger.info("AUDIT - Request GET /users/company/edit for company id={}", id);
         CompanyRequest companyRequest = companyService.getCompanyRequestById(id);
         model.addAttribute("company", companyRequest);
         model.addAttribute("companyId", id);
@@ -58,6 +61,7 @@ public class CompanyController {
     public String updateSeeker(@PathVariable Long id,
                                @ModelAttribute CompanyRequest companyRequest, RedirectAttributes redirectAttributes) {
         try {
+            auditLogger.info("AUDIT - Request POST /users/company/update for company id={}", id);
             companyService.updateCompany(id, companyRequest);
             redirectAttributes.addFlashAttribute("message", "Company berhasil diupdate.");
         } catch (Exception e) {
@@ -69,6 +73,7 @@ public class CompanyController {
     @GetMapping("/company/delete/{id}")
     public String deleteJobSeeker(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
+            auditLogger.info("AUDIT - Request GET /users/company/delete for company id={}", id);
             companyService.deleteCompanyById(id);
             redirectAttributes.addFlashAttribute("message", "Company deleted successfully.");
         } catch (Exception e) {
