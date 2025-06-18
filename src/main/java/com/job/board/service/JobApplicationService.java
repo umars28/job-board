@@ -95,6 +95,11 @@ public class JobApplicationService {
         application.setAppliedAt(LocalDateTime.now());
 
         jobApplicationRepository.save(application);
+        auditLogger.info(
+                "AUDIT - Job application created for jobId={} by seekerId={}",
+                jobId,
+                seeker.getId()
+        );
         notificationService.notifyCompanyJobApplied(job, seeker);
     }
 }

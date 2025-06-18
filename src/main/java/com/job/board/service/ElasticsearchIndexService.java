@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ElasticsearchIndexService {
 
+    private final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final RestClient restClient;
     private final JobRepository jobRepository;
     private final ObjectMapper objectMapper;
@@ -30,6 +33,7 @@ public class ElasticsearchIndexService {
         int statusCode = headResponse.getStatusLine().getStatusCode();
 
         if (statusCode == 200) {
+            auditLogger.info("AUDIT - Index 'jobs' already exists, skip creating.");
             System.out.println("Index jobs already exists, skip creating.");
         } else {
             String mappingJson = new String(
@@ -40,6 +44,7 @@ public class ElasticsearchIndexService {
             Request request = new Request("PUT", "/jobs");
             request.setJsonEntity(mappingJson);
             restClient.performRequest(request);
+            auditLogger.info("AUDIT - Index 'jobs' created successfully.");
         }
     }
 
@@ -50,8 +55,10 @@ public class ElasticsearchIndexService {
         if (statusCode == 200) {
             Request deleteRequest = new Request("DELETE", "/jobs");
             restClient.performRequest(deleteRequest);
+            auditLogger.info("AUDIT - Index 'jobs' deleted successfully.");
         } else {
             System.out.println("Index jobs not found, skip delete.");
+            auditLogger.info("AUDIT - Index 'jobs' not found, skip deleting.");
         }
     }
 
@@ -60,6 +67,7 @@ public class ElasticsearchIndexService {
         createIndex();
         List<Job> jobs = jobRepository.findAll();
         bulkIndexJobs(jobs);
+        auditLogger.info("AUDIT - Bulk reindex completed for {} jobs.", jobs.size());
         return jobs.size();
     }
 
@@ -90,5 +98,6 @@ public class ElasticsearchIndexService {
         Request request = new Request("POST", "/_bulk");
         request.setJsonEntity(bulkRequestBody.toString());
         restClient.performRequest(request);
+        auditLogger.info("AUDIT - Bulk indexing finished for {} jobs.", jobs.size());
     }
 }

@@ -8,6 +8,8 @@ import com.job.board.service.JobApplicationService;
 import com.job.board.service.NotificationService;
 import com.job.board.service.SeekerService;
 import com.job.board.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -21,6 +23,7 @@ import java.util.List;
 @RequestMapping("/seeker")
 @Controller
 public class SeekerController {
+    private final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final UserService userService;
     private final SeekerService seekerService;
     private final JobApplicationService jobApplicationService;
@@ -48,6 +51,7 @@ public class SeekerController {
             Principal principal,
             RedirectAttributes redirectAttributes
     ) {
+        auditLogger.info("AUDIT - Request POST /seeker/profile/update with username={}", principal.getName());
         userService.updateProfile(formUser, principal.getName());
         redirectAttributes.addFlashAttribute("successMessage", "Profil berhasil diperbarui.");
 
@@ -72,6 +76,7 @@ public class SeekerController {
 
     @GetMapping("/notification/redirect/{id}")
     public String redirectNotification(@PathVariable Long id) {
+        auditLogger.info("AUDIT - Request GET /seeker/notification/redirect/{} ", id);
         Notification notification = notificationService.markAsRead(id);
         if (notification.getLink() != null && !notification.getLink().isEmpty()) {
             return "redirect:" + notification.getLink();
@@ -82,6 +87,7 @@ public class SeekerController {
 
     @PostMapping("/notification/mark-all-read")
     public String markAllAsRead(Principal principal) {
+        auditLogger.info("AUDIT - Request POST /seeker/notification/mark-all-read by username={}", principal.getName());
         String username = principal.getName();
         notificationService.markAllAsRead(username);
         return "redirect:/seeker/notification";

@@ -6,6 +6,8 @@ import com.job.board.service.JobApplicationService;
 import com.job.board.service.JobCategoryService;
 import com.job.board.service.JobService;
 import com.job.board.service.JobTagService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -21,6 +23,7 @@ import java.util.List;
 @RequestMapping("/job")
 @Controller("seekerJobController")
 public class JobController {
+    private final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final JobService jobService;
     private final JobCategoryService jobCategoryService;
     private final JobTagService jobTagService;
@@ -76,6 +79,7 @@ public class JobController {
     @PostMapping("/apply/{id}")
     public String applyJob(@PathVariable Long id, Principal principal) {
         String username = principal.getName();
+        auditLogger.info("AUDIT - Request POST /job/apply/{} by username={}", id, username);
         jobApplicationService.applyForJob(id, username);
         return "redirect:/job/apply/success?successApply=true";
     }
