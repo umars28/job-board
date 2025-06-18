@@ -4,6 +4,8 @@ import com.job.board.entity.JobCategory;
 import com.job.board.model.CategoryRequest;
 import com.job.board.service.JobCategoryService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +17,7 @@ import java.util.List;
 @RequestMapping("/jobs/category")
 @Controller
 public class JobCategoryController {
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final JobCategoryService jobCategoryService;
 
     public JobCategoryController(JobCategoryService jobCategoryService) {
@@ -41,6 +44,7 @@ public class JobCategoryController {
         }
 
         try {
+            auditLogger.info("AUDIT - Request POST /jobs/category/save received");
             jobCategoryService.saveJobCategory(categoryRequest);
             redirectAttributes.addFlashAttribute("message", "Kategori berhasil disimpan.");
         } catch (Exception e) {
@@ -59,6 +63,10 @@ public class JobCategoryController {
         }
 
         try {
+            auditLogger.info(
+                    "AUDIT - Received POST /jobs/category/update for category id={}",
+                    categoryRequest.getId()
+            );
             jobCategoryService.updateJobCategory(categoryRequest);
             redirectAttributes.addFlashAttribute("message", "Kategori berhasil diperbarui.");
         } catch (Exception e) {
@@ -71,6 +79,7 @@ public class JobCategoryController {
     @GetMapping("/delete/{id}")
     public String deleteJobCategory(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         try {
+            auditLogger.info("AUDIT - Request GET /jobs/category/delete for category id={}", id);
             jobCategoryService.deleteJobCategoryById(id);
             redirectAttributes.addFlashAttribute("message", "Kategori berhasil dihapus.");
         } catch (Exception e) {

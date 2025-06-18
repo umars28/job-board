@@ -5,6 +5,8 @@ import com.job.board.model.TagRequest;
 import com.job.board.service.JobTagService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -17,6 +19,7 @@ import java.util.List;
 @Controller
 public class JobTagController {
 
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final JobTagService jobTagService;
 
     public JobTagController(JobTagService jobTagService) {
@@ -33,6 +36,7 @@ public class JobTagController {
 
     @PostMapping("/save")
     public String saveJobTag(@Valid @ModelAttribute("tagRequest") TagRequest tagRequest, BindingResult bindingResult, RedirectAttributes redirectAttributes, Model model) {
+        auditLogger.info("AUDIT - Request POST /jobs/tag/save received");
         if (bindingResult.hasErrors()) {
             List<JobTag> jobTagList = jobTagService.getAllJobTags();
             model.addAttribute("jobTagList", jobTagList);
@@ -49,6 +53,7 @@ public class JobTagController {
 
     @PostMapping("/update")
     public String updateJobTag(@Valid @ModelAttribute("tagRequest") TagRequest tagRequest, BindingResult bindingResult, HttpServletRequest request, RedirectAttributes redirectAttributes, Model model) {
+        auditLogger.info("AUDIT - Request POST /jobs/tag/update for tag id={}", tagRequest.getId());
         if (bindingResult.hasErrors()) {
             List<JobTag> jobTagList = jobTagService.getAllJobTags();
             model.addAttribute("jobTagList", jobTagList);
@@ -67,6 +72,7 @@ public class JobTagController {
 
     @GetMapping("/delete/{id}")
     public String deleteJobTag(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        auditLogger.info("AUDIT - Request GET /jobs/tag/delete/{} received", id);
         try {
             jobTagService.deleteJobTagById(id);
             redirectAttributes.addFlashAttribute("message", "Tag berhasil dihapus.");

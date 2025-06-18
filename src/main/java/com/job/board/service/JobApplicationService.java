@@ -3,6 +3,8 @@ package com.job.board.service;
 import com.job.board.entity.*;
 import com.job.board.enums.ApplicantStatus;
 import com.job.board.repository.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,6 +13,7 @@ import java.util.List;
 
 @Service
 public class JobApplicationService {
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
 
     private final JobApplicationRepository jobApplicationRepository;
     private final UserRepository userRepository;
@@ -41,8 +44,16 @@ public class JobApplicationService {
         JobApplication application = jobApplicationRepository.findById(applicationId)
                 .orElseThrow(() -> new RuntimeException("Application not found"));
 
+        ApplicantStatus oldStatus = application.getApplicantStatus();
         application.setApplicantStatus(newStatus);
         JobApplication updatedApplication = jobApplicationRepository.save(application);
+
+        auditLogger.info(
+                "AUDIT - Updated application id={} status from {} to {}",
+                applicationId,
+                oldStatus.name(),
+                newStatus.name()
+        );
 
         notificationService.notifyJobSeekerStatusChanged(updatedApplication);
         return updatedApplication;

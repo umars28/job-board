@@ -25,7 +25,6 @@ public class CompanyController {
 
     @GetMapping("/company")
     public String companyList(Model model) {
-        auditLogger.info("AUDIT - Request GET /users/company received");
         List<Company> companyList = companyService.getAllCompanies();
         model.addAttribute("company", companyList);
         return "/admin/company/index";
@@ -50,7 +49,6 @@ public class CompanyController {
 
     @GetMapping("/company/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        auditLogger.info("AUDIT - Request GET /users/company/edit for company id={}", id);
         CompanyRequest companyRequest = companyService.getCompanyRequestById(id);
         model.addAttribute("company", companyRequest);
         model.addAttribute("companyId", id);

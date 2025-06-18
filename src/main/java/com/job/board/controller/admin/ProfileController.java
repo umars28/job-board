@@ -2,6 +2,8 @@ package com.job.board.controller.admin;
 
 import com.job.board.entity.User;
 import com.job.board.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +17,7 @@ import java.security.Principal;
 @RequestMapping("/profile")
 @Controller
 public class ProfileController {
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final UserService userService;
 
     public ProfileController(UserService userService) {
@@ -31,7 +34,9 @@ public class ProfileController {
 
     @PostMapping("/update")
     public String updateProfile(@ModelAttribute("user") User formUser, Principal principal, RedirectAttributes redirectAttributes) {
-        userService.updateProfile(formUser, principal.getName());
+        String username = principal.getName();
+        auditLogger.info("AUDIT - Request POST /profile/update for username={}", username);
+        userService.updateProfile(formUser, username);
         redirectAttributes.addFlashAttribute("successMessage", "Profil berhasil diperbarui.");
         return "redirect:/profile?success";
     }

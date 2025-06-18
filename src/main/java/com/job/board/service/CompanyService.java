@@ -35,10 +35,7 @@ public class CompanyService {
     }
 
     public List<Company> getAllCompanies() {
-        auditLogger.info("AUDIT - Start retrieving companies");
-        List<Company> companies =  companyRepository.findAllWithJobsAndUser();
-        auditLogger.info("AUDIT - Retrieved companies count: {}", companies.size());
-        return companies;
+        return companyRepository.findAllWithJobsAndUser();
     }
 
     @Transactional
@@ -83,13 +80,6 @@ public class CompanyService {
         request.setEmail(user.getEmail());
         request.setAddress(company.getAddress());
         request.setWebsite(company.getWebsite());
-
-        auditLogger.info(
-                "AUDIT - Fetched CompanyRequest for companyId={} (username={})",
-                companyId,
-                user.getUsername()
-        );
-
         return request;
     }
 

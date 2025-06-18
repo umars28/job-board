@@ -11,6 +11,8 @@ import com.job.board.service.JobCategoryService;
 import com.job.board.service.JobService;
 import com.job.board.service.JobTagService;
 import com.job.board.util.AuthUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +24,7 @@ import java.util.List;
 @Controller("adminJobController")
 public class JobController {
 
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final JobService jobService;
     private final JobTagRepository jobTagRepository;
     private final JobCategoryRepository jobCategoryRepository;
@@ -67,6 +70,7 @@ public class JobController {
 
     @PostMapping("/save")
     public String saveJob(@ModelAttribute("job") Job job, Model model, RedirectAttributes redirectAttributes) {
+        auditLogger.info("AUDIT - Request POST /jobs/save received to create a new job with title='{}'", job.getTitle());
         try {
             jobService.saveJob(job);
             redirectAttributes.addFlashAttribute("message", "Job berhasil dibuat.");
@@ -97,6 +101,7 @@ public class JobController {
 
     @PostMapping("/update/{id}")
     public String updateJob(@PathVariable Long id, @ModelAttribute("job") Job job, Model model, RedirectAttributes redirectAttributes) {
+        auditLogger.info("AUDIT - Request POST /jobs/update/{} received to update job with new title='{}'", id, job.getTitle());
         try {
             jobService.updateJob(id, job);
             redirectAttributes.addFlashAttribute("message", "Job berhasil diupdate.");
@@ -114,6 +119,7 @@ public class JobController {
 
     @GetMapping("/archive/{id}")
     public String archive(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        auditLogger.info("AUDIT - Request GET /jobs/archive/{} received", id);
         try {
             jobService.archiveJob(id);
             redirectAttributes.addFlashAttribute("message", "Job archived successfully.");
@@ -125,6 +131,7 @@ public class JobController {
 
     @GetMapping("/restore/{id}")
     public String restore(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        auditLogger.info("AUDIT - Request GET /jobs/restore/{} received", id);
         try {
             jobService.restoreJob(id);
             redirectAttributes.addFlashAttribute("message", "Job restored successfully.");
@@ -138,9 +145,4 @@ public class JobController {
     // @RequestBody for json
     // @PathVariable Mengambil data dari URL path variable (dinamis pada URL)
     // @RequestParams Mengambil parameter dari query string atau form data
-    @PostMapping
-    public String save(@ModelAttribute Job job) {
-        jobRepository.save(job);
-        return "redirect:/jobs";
-    }
 }

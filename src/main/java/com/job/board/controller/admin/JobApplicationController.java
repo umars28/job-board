@@ -8,6 +8,8 @@ import com.job.board.service.JobApplicationService;
 import com.job.board.service.JobService;
 import com.job.board.util.AuthUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +20,7 @@ import java.util.List;
 @RequestMapping("/jobs/applications")
 @Controller
 public class JobApplicationController {
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
 
     private final JobService jobService;
     private final JobApplicationService jobApplicationService;
@@ -57,6 +60,7 @@ public class JobApplicationController {
                                           @RequestParam("status") String status, RedirectAttributes redirectAttributes, HttpServletRequest request) {
         try {
             ApplicantStatus newStatus = ApplicantStatus.valueOf(status);
+            auditLogger.info("AUDIT - Request POST /jobs/applications/update-status application id={} to status={}", applicationId, newStatus);
             JobApplication application = jobApplicationService.updateApplicationStatus(applicationId, newStatus);
             Long jobId = application.getJob().getId();
             redirectAttributes.addFlashAttribute("message", "Status updated to " + newStatus.name());

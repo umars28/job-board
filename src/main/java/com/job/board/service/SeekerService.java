@@ -7,6 +7,8 @@ import com.job.board.model.SeekerRequest;
 import com.job.board.repository.JobApplicationRepository;
 import com.job.board.repository.SeekerRepository;
 import com.job.board.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,7 @@ import java.util.Map;
 
 @Service
 public class SeekerService {
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final SeekerRepository seekerRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
@@ -77,6 +80,7 @@ public class SeekerService {
         user.setRole(Role.JOB_SEEKER);
 
         User savedUser = userRepository.save(user);
+        auditLogger.info("AUDIT - User saved with id={}", savedUser.getId());
 
         JobSeeker jobSeeker = new JobSeeker();
         jobSeeker.setUser(savedUser);
@@ -84,6 +88,7 @@ public class SeekerService {
         jobSeeker.setPhone(seekerRequest.getPhone());
         jobSeeker.setResumeUrl(seekerRequest.getResumeUrl());
         seekerRepository.save(jobSeeker);
+        auditLogger.info("AUDIT - JobSeeker saved for userId={}", savedUser.getId());
     }
 
     @Transactional
@@ -102,7 +107,10 @@ public class SeekerService {
         seeker.setResumeUrl(request.getResumeUrl());
 
         userRepository.save(user);
+        auditLogger.info("AUDIT - User updated with id={}", user.getId());
+
         seekerRepository.save(seeker);
+        auditLogger.info("AUDIT - JobSeeker updated with id={}", seeker.getId());
     }
 
     @Transactional
@@ -111,10 +119,12 @@ public class SeekerService {
                 .orElseThrow(() -> new RuntimeException("JobSeeker not found"));
 
         jobApplicationRepository.deleteByJobSeeker(seeker);
+        auditLogger.info("AUDIT - Related job applications deleted for seekerId={}", id);
         User user = seeker.getUser();
         seekerRepository.delete(seeker);
         if (user != null) {
             userRepository.delete(user);
+            auditLogger.info("AUDIT - Related user deleted with id={}", user.getId());
         }
     }
 

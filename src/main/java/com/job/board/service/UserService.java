@@ -7,6 +7,8 @@ import com.job.board.enums.Role;
 import com.job.board.repository.CompanyRepository;
 import com.job.board.repository.SeekerRepository;
 import com.job.board.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,6 +20,7 @@ import java.util.List;
 
 @Service
 public class UserService {
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CompanyRepository companyRepository;
@@ -41,6 +44,7 @@ public class UserService {
         existingUser.setEmail(formUser.getEmail());
 
         if (formUser.getPassword() != null && !formUser.getPassword().isBlank()) {
+            auditLogger.info("AUDIT - Password change detected for username={}", username);
             existingUser.setPassword(passwordEncoder.encode(formUser.getPassword()));
         }
 
@@ -49,6 +53,7 @@ public class UserService {
             Company formCompany = formUser.getCompany();
 
             if (formCompany != null) {
+                auditLogger.info("AUDIT - Updating company details for username={} (companyId={})", username, existingCompany.getId());
                 existingCompany.setName(formUser.getFirstName()+ " " +formUser.getLastName());
                 existingCompany.setAddress(formCompany.getAddress());
                 existingCompany.setWebsite(formCompany.getWebsite());
@@ -59,6 +64,7 @@ public class UserService {
             JobSeeker formJobSeeker = formUser.getJobSeeker();
 
             if (formJobSeeker != null) {
+                auditLogger.info("AUDIT - Updating job seeker details for username={} (seekerId={})", username, existingJobSeeker.getId());
                 existingJobSeeker.setFullName(formUser.getFirstName()+ " " +formUser.getLastName());
                 existingJobSeeker.setPhone(formJobSeeker.getPhone());
                 existingJobSeeker.setResumeUrl(formJobSeeker.getResumeUrl());
@@ -67,5 +73,6 @@ public class UserService {
         }
 
         userRepository.save(existingUser);
+        auditLogger.info("AUDIT - Finished updating profile for username={}", username);
     }
 }

@@ -4,6 +4,8 @@ import com.job.board.entity.*;
 import com.job.board.enums.ApplicantStatus;
 import com.job.board.enums.JobStatus;
 import com.job.board.repository.NotificationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,6 +14,7 @@ import java.util.List;
 @Service
 public class NotificationService {
 
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final NotificationRepository notificationRepository;
 
     public NotificationService(NotificationRepository notificationRepository) {
@@ -26,6 +29,12 @@ public class NotificationService {
         List<Notification> unread = notificationRepository.findByReceiverUsernameAndIsReadFalse(username);
         unread.forEach(n -> n.setIsRead(true));
         notificationRepository.saveAll(unread);
+
+        auditLogger.info(
+                "AUDIT - Request POST /notification/mark-all-read for username={} ({} notifications marked as read)",
+                username,
+                unread.size()
+        );
     }
 
     public void notifyCompanyJobApplied(Job job, JobSeeker seeker) {
@@ -73,6 +82,11 @@ public class NotificationService {
             notification.setIsRead(true);
             notificationRepository.save(notification);
         }
+        auditLogger.info(
+                "AUDIT - Request GET /notification/redirect/{} (marked as read, receiver username={})",
+                id,
+                notification.getReceiver().getUsername()
+        );
         return notification;
     }
 

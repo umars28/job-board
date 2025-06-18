@@ -12,6 +12,8 @@ import com.job.board.util.AuthUtil;
 import org.elasticsearch.client.Request;
 import org.elasticsearch.client.Response;
 import org.elasticsearch.client.RestClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +32,8 @@ import java.util.*;
 
 @Service
 public class JobService {
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
+
     private final JobRepository jobRepository;
     private final JobCategoryRepository jobCategoryRepository;
     private final CompanyService companyService;
@@ -83,8 +87,14 @@ public class JobService {
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
         authUtil.authorizeCompanyAccessToJob(job);
+        JobStatus oldStatus = job.getStatus();
         job.setStatus(JobStatus.ARCHIVED);
         jobRepository.save(job);
+
+        auditLogger.info(
+                "AUDIT - Job id={} archived (old status={})",
+                id, oldStatus
+        );
 
         try {
             elasticsearchDocIndexService.deleteJobFromIndex(id);
@@ -98,8 +108,14 @@ public class JobService {
         Job job = jobRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Job not found with id: " + id));
         authUtil.authorizeCompanyAccessToJob(job);
+        JobStatus oldStatus = job.getStatus();
         job.setStatus(JobStatus.OPEN);
         jobRepository.save(job);
+
+        auditLogger.info(
+                "AUDIT - Job id={} restored (old status={})",
+                id, oldStatus
+        );
 
         try {
             elasticsearchDocIndexService.indexJob(job);
@@ -129,6 +145,14 @@ public class JobService {
 
         jobRepository.save(job);
 
+        auditLogger.info(
+                "AUDIT - Saved new Job with id={} title='{}' by company='{}' (username={})",
+                job.getId(),
+                job.getTitle(),
+                company.getName(),
+                username
+        );
+
         try {
             elasticsearchDocIndexService.indexJob(job);
         } catch (Exception e) {
@@ -140,6 +164,8 @@ public class JobService {
     public void updateJob(Long id, Job updatedJob) {
         Job existingJob = jobRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid job ID: " + id));
+
+        String oldTitle = existingJob.getTitle();
 
         existingJob.setTitle(updatedJob.getTitle());
         existingJob.setDescription(updatedJob.getDescription());
@@ -158,6 +184,13 @@ public class JobService {
         existingJob.setTags(updatedJob.getTags());
 
         jobRepository.save(existingJob);
+
+        auditLogger.info(
+                "AUDIT - Updated Job id={} from title='{}' to title='{}'",
+                id,
+                oldTitle,
+                updatedJob.getTitle()
+        );
 
         try {
             elasticsearchDocIndexService.indexJob(existingJob);

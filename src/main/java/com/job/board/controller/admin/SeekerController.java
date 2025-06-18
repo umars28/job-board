@@ -3,6 +3,8 @@ package com.job.board.controller.admin;
 import com.job.board.entity.JobSeeker;
 import com.job.board.model.SeekerRequest;
 import com.job.board.service.SeekerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +15,7 @@ import java.util.List;
 @RequestMapping("/users")
 @Controller("adminSeekerController")
 public class SeekerController {
-
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final SeekerService seekerService;
 
     public SeekerController(SeekerService seekerService) {
@@ -34,6 +36,7 @@ public class SeekerController {
 
     @PostMapping("/seeker/save")
     public String saveJobSeeker(@ModelAttribute SeekerRequest seekerRequest, RedirectAttributes redirectAttributes) {
+        auditLogger.info("AUDIT - Request POST /users/seeker/save with email={}", seekerRequest.getEmail());
         try {
             seekerService.saveSeeker(seekerRequest);
             redirectAttributes.addFlashAttribute("message", "Job seeker berhasil ditambahkan.");
@@ -54,6 +57,7 @@ public class SeekerController {
     @PostMapping("/seeker/update/{id}")
     public String updateSeeker(@PathVariable Long id,
                                @ModelAttribute SeekerRequest seekerRequest, RedirectAttributes redirectAttributes) {
+        auditLogger.info("AUDIT - Request POST /users/seeker/update/{} with email={}", id, seekerRequest.getEmail());
         try {
             seekerService.updateSeeker(id, seekerRequest);
             redirectAttributes.addFlashAttribute("message", "Job seeker berhasil diupdate.");
@@ -65,6 +69,7 @@ public class SeekerController {
 
     @GetMapping("/seeker/delete/{id}")
     public String deleteJobSeeker(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        auditLogger.info("AUDIT - Request GET /users/seeker/delete/{}", id);
         try {
             seekerService.deleteSeekerById(id);
             redirectAttributes.addFlashAttribute("message", "Seeker deleted successfully.");
