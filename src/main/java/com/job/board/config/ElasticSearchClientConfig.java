@@ -25,10 +25,13 @@ public class ElasticSearchClientConfig {
     public RestClient restClient() {
         RestClientBuilder builder = RestClient.builder(HttpHost.create(uris));
         final BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+
         credentialsProvider.setCredentials(AuthScope.ANY,
                 new UsernamePasswordCredentials(username, password));
+
         builder.setHttpClientConfigCallback(httpClientBuilder ->
                 httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider));
+
         return builder.build();
     }
 }
