@@ -3,6 +3,8 @@ package com.job.board.controller.admin;
 import com.job.board.entity.Company;
 import com.job.board.model.CompanyRequest;
 import com.job.board.service.CompanyService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import java.util.List;
 @Controller
 public class CompanyController {
 
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final CompanyService companyService;
 
     public CompanyController(CompanyService companyService) {

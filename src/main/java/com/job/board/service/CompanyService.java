@@ -1,5 +1,6 @@
 package com.job.board.service;
 
+import com.job.board.annotation.AuditLog;
 import com.job.board.entity.Company;
 import com.job.board.entity.JobSeeker;
 import com.job.board.entity.User;
@@ -32,6 +33,7 @@ public class CompanyService {
         this.jobRepository = jobRepository;
     }
 
+    @AuditLog
     public List<Company> getAllCompanies() {
         return companyRepository.findAllWithJobsAndUser();
     }
