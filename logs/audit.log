@@ -18,3 +18,5 @@ AUDIT - Created company id=26 name=Digit Indonesia with user id=52 username=PT F
 AUDIT - Request GET /users/company received
 AUDIT - Start retrieving companies
 AUDIT - Retrieved companies count: 24
+AUDIT - Request POST /jobs/save received to create a new job with title='Oho'
+AUDIT - Saved new Job with id=57 title='Oho' by company='Company 2' (username=company_user2)
