@@ -3,6 +3,7 @@ package com.job.board.service;
 import com.job.board.entity.*;
 import com.job.board.enums.ApplicantStatus;
 import com.job.board.enums.JobStatus;
+import com.job.board.model.NotificationPayload;
 import com.job.board.repository.NotificationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +17,11 @@ public class NotificationService {
 
     private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final NotificationRepository notificationRepository;
+    private final NotificationPublisher notificationPublisher;
 
-    public NotificationService(NotificationRepository notificationRepository) {
+    public NotificationService(NotificationRepository notificationRepository, NotificationPublisher notificationPublisher) {
         this.notificationRepository = notificationRepository;
+        this.notificationPublisher = notificationPublisher;
     }
 
     public List<Notification> getAllNotifications(String username) {
@@ -49,6 +52,14 @@ public class NotificationService {
         notification.setReceiver(companyUser);
 
         notificationRepository.save(notification);
+
+        NotificationPayload payload = new NotificationPayload(
+                companyUser.getUsername(),
+                message,
+                link
+        );
+        notificationPublisher.notifyCompany(payload);
+
     }
 
     public void notifyJobSeekerStatusChanged(JobApplication application) {
@@ -64,6 +75,13 @@ public class NotificationService {
         notification.setReceiver(jobSeekerUser);
 
         notificationRepository.save(notification);
+
+        NotificationPayload payload = new NotificationPayload(
+                jobSeekerUser.getUsername(),
+                message,
+                link
+        );
+        notificationPublisher.notifyJobSeeker(payload);
     }
 
     public List<Notification> getLatestNotifications(String username) {
