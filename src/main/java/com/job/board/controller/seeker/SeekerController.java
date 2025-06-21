@@ -1,5 +1,6 @@
 package com.job.board.controller.seeker;
 
+import com.job.board.client.NotificationClient;
 import com.job.board.entity.JobApplication;
 import com.job.board.entity.JobSeeker;
 import com.job.board.entity.Notification;
@@ -29,12 +30,14 @@ public class SeekerController {
     private final SeekerService seekerService;
     private final JobApplicationService jobApplicationService;
     private final NotificationService notificationService;
+    private final NotificationClient notificationClient;
 
-    public SeekerController(UserService userService, SeekerService seekerService, JobApplicationService jobApplicationService, NotificationService notificationService) {
+    public SeekerController(UserService userService, SeekerService seekerService, JobApplicationService jobApplicationService, NotificationService notificationService, NotificationClient notificationClient) {
         this.userService = userService;
         this.seekerService = seekerService;
         this.jobApplicationService = jobApplicationService;
         this.notificationService = notificationService;
+        this.notificationClient = notificationClient;
     }
 
     @GetMapping("/profile")
@@ -78,7 +81,7 @@ public class SeekerController {
     @GetMapping("/notification/redirect/{id}")
     public String redirectNotification(@PathVariable Long id) {
         auditLogger.info("AUDIT - Request GET /seeker/notification/redirect/{} ", id);
-        Notification notification = notificationService.markAsRead(id);
+        NotificationResponse notification = notificationClient.markAsRead(id);
         if (notification.getLink() != null && !notification.getLink().isEmpty()) {
             return "redirect:" + notification.getLink();
         } else {
@@ -90,7 +93,7 @@ public class SeekerController {
     public String markAllAsRead(Principal principal) {
         auditLogger.info("AUDIT - Request POST /seeker/notification/mark-all-read by username={}", principal.getName());
         String username = principal.getName();
-        notificationService.markAllAsRead(username);
+        notificationClient.markAllAsRead(username);
         return "redirect:/seeker/notification";
     }
 

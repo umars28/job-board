@@ -2,8 +2,11 @@ package com.job.board.client;
 
 import com.job.board.common.ApiResponse;
 import com.job.board.model.NotificationResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -13,6 +16,7 @@ import java.util.List;
 @Component
 public class NotificationClient {
 
+    private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final RestTemplate restTemplate;
     private final String baseUrl;
 
@@ -71,6 +75,39 @@ public class NotificationClient {
             return body.getData();
         } else {
             return 0L;
+        }
+    }
+
+    public void markAllAsRead(String username) {
+        String url = String.format("%s/api/notifications/mark-all-read?username=%s", baseUrl, username);
+        restTemplate.postForEntity(url, null, ApiResponse.class);
+        auditLogger.info(
+                "AUDIT - Request POST /notification/mark-all-read for username={}",
+                username
+        );
+    }
+
+    public NotificationResponse markAsRead(Long id) {
+        String url = String.format("%s/api/notifications/%d/mark-read", baseUrl, id);
+        ApiResponse<NotificationResponse> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                null,
+                new ParameterizedTypeReference<ApiResponse<NotificationResponse>>() {}
+        ).getBody();
+
+        if (response != null && response.getData() != null) {
+            NotificationResponse notification = response.getData();
+
+            auditLogger.info(
+                    "AUDIT - Request GET /notification/redirect/{} (marked as read, receiver username={})",
+                    id,
+                    notification.getReceiverUsername()
+            );
+
+            return notification;
+        } else {
+            throw new RuntimeException("Failed to mark notification as read");
         }
     }
 }

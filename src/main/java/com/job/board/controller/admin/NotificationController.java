@@ -1,5 +1,6 @@
 package com.job.board.controller.admin;
 
+import com.job.board.client.NotificationClient;
 import com.job.board.entity.Notification;
 import com.job.board.model.NotificationResponse;
 import com.job.board.service.NotificationService;
@@ -20,9 +21,11 @@ import java.util.List;
 public class NotificationController {
     private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final NotificationService notificationService;
+    private final NotificationClient notificationClient;
 
-    public NotificationController(NotificationService notificationService) {
+    public NotificationController(NotificationService notificationService, NotificationClient notificationClient) {
         this.notificationService = notificationService;
+        this.notificationClient = notificationClient;
     }
 
     @GetMapping
@@ -37,14 +40,14 @@ public class NotificationController {
     public String markAllAsRead(Principal principal) {
         String username = principal.getName();
         auditLogger.info("AUDIT - Request POST /notification/mark-all-read for username={}", username);
-        notificationService.markAllAsRead(username);
+        notificationClient.markAllAsRead(username);
         return "redirect:/notification";
     }
 
     @GetMapping("/redirect/{id}")
     public String redirectNotification(@PathVariable Long id) {
         auditLogger.info("AUDIT - Request GET /notification/redirect/{}", id);
-        Notification notification = notificationService.markAsRead(id);
+        NotificationResponse notification = notificationClient.markAsRead(id);
         if (notification.getLink() != null && !notification.getLink().isEmpty()) {
             return "redirect:" + notification.getLink();
         } else {

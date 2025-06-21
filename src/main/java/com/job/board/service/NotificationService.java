@@ -59,32 +59,4 @@ public class NotificationService {
         notificationPublisher.notifyJobSeeker(payload);
     }
 
-    public void markAllAsRead(String username) {
-        List<Notification> unread = notificationRepository.findByReceiverUsernameAndIsReadFalse(username);
-        unread.forEach(n -> n.setIsRead(true));
-        notificationRepository.saveAll(unread);
-
-        auditLogger.info(
-                "AUDIT - Request POST /notification/mark-all-read for username={} ({} notifications marked as read)",
-                username,
-                unread.size()
-        );
-    }
-
-    public Notification markAsRead(Long id) {
-        Notification notification = notificationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Notification not found"));
-
-        if (!notification.getIsRead()) {
-            notification.setIsRead(true);
-            notificationRepository.save(notification);
-        }
-        auditLogger.info(
-                "AUDIT - Request GET /notification/redirect/{} (marked as read, receiver username={})",
-                id,
-                notification.getReceiver().getUsername()
-        );
-        return notification;
-    }
-
 }
