@@ -1,9 +1,11 @@
 package com.job.board.service;
 
+import com.job.board.client.NotificationClient;
 import com.job.board.entity.*;
 import com.job.board.enums.ApplicantStatus;
 import com.job.board.enums.JobStatus;
 import com.job.board.model.NotificationPayload;
+import com.job.board.model.NotificationResponse;
 import com.job.board.repository.NotificationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +20,43 @@ public class NotificationService {
     private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
     private final NotificationRepository notificationRepository;
     private final NotificationPublisher notificationPublisher;
+    private final NotificationClient notificationClient;
 
-    public NotificationService(NotificationRepository notificationRepository, NotificationPublisher notificationPublisher) {
+    public NotificationService(NotificationRepository notificationRepository, NotificationPublisher notificationPublisher, NotificationClient notificationClient) {
         this.notificationRepository = notificationRepository;
         this.notificationPublisher = notificationPublisher;
+        this.notificationClient = notificationClient;
     }
 
-    public List<Notification> getAllNotifications(String username) {
-        return notificationRepository.findByReceiverUsernameOrderByCreatedAtDesc(username);
+    public List<NotificationResponse> getAllNotifications(String username) {
+        return notificationClient.getAllNotifications(username);
+    }
+
+    public void notifyCompanyJobApplied(Job job, JobSeeker seeker) {
+        User companyUser = job.getCompany().getUser();
+        String message = seeker.getFullName() + " applied for your job: " + job.getTitle();
+        String link = "/jobs/applications/" + job.getId() + "/applicants?status"+ ApplicantStatus.APPLIED;
+
+        NotificationPayload payload = new NotificationPayload(
+                companyUser.getUsername(),
+                message,
+                link
+        );
+        notificationPublisher.notifyCompany(payload);
+    }
+
+    public void notifyJobSeekerStatusChanged(JobApplication application) {
+        User jobSeekerUser = application.getJobSeeker().getUser();
+        String message = "Status for your application on '" + application.getJob().getTitle()
+                + "' has been updated to: " + application.getApplicantStatus();
+        String link = "/seeker/job/applied";
+
+        NotificationPayload payload = new NotificationPayload(
+                jobSeekerUser.getUsername(),
+                message,
+                link
+        );
+        notificationPublisher.notifyJobSeeker(payload);
     }
 
     public void markAllAsRead(String username) {
@@ -38,58 +69,6 @@ public class NotificationService {
                 username,
                 unread.size()
         );
-    }
-
-    public void notifyCompanyJobApplied(Job job, JobSeeker seeker) {
-        User companyUser = job.getCompany().getUser();
-        String message = seeker.getFullName() + " applied for your job: " + job.getTitle();
-
-        Notification notification = new Notification();
-        String link = "/jobs/applications/" + job.getId() + "/applicants?status"+ ApplicantStatus.APPLIED;
-        notification.setMessage(message);
-        notification.setLink(link);
-        notification.setCreatedAt(LocalDateTime.now());
-        notification.setReceiver(companyUser);
-
-        notificationRepository.save(notification);
-
-        NotificationPayload payload = new NotificationPayload(
-                companyUser.getUsername(),
-                message,
-                link
-        );
-        notificationPublisher.notifyCompany(payload);
-
-    }
-
-    public void notifyJobSeekerStatusChanged(JobApplication application) {
-        User jobSeekerUser = application.getJobSeeker().getUser();
-        String message = "Status for your application on '" + application.getJob().getTitle()
-                + "' has been updated to: " + application.getApplicantStatus();
-
-        Notification notification = new Notification();
-        String link = "/seeker/job/applied";
-        notification.setMessage(message);
-        notification.setLink(link);
-        notification.setCreatedAt(LocalDateTime.now());
-        notification.setReceiver(jobSeekerUser);
-
-        notificationRepository.save(notification);
-
-        NotificationPayload payload = new NotificationPayload(
-                jobSeekerUser.getUsername(),
-                message,
-                link
-        );
-        notificationPublisher.notifyJobSeeker(payload);
-    }
-
-    public List<Notification> getLatestNotifications(String username) {
-        return notificationRepository.findTop5ByReceiverUsernameOrderByCreatedAtDesc(username);
-    }
-
-    public long countUnread(String username) {
-        return notificationRepository.countByReceiverUsernameAndIsReadFalse(username);
     }
 
     public Notification markAsRead(Long id) {

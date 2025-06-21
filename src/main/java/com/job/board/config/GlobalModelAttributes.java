@@ -1,7 +1,9 @@
 package com.job.board.config;
 
+import com.job.board.client.NotificationClient;
 import com.job.board.entity.Notification;
 import com.job.board.entity.User;
+import com.job.board.model.NotificationResponse;
 import com.job.board.service.NotificationService;
 import com.job.board.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,10 +19,12 @@ import java.util.List;
 public class GlobalModelAttributes {
     private final UserService userService;
     private final NotificationService notificationService;
+    private final NotificationClient notificationClient;
 
-    public GlobalModelAttributes(UserService userService, NotificationService notificationService) {
+    public GlobalModelAttributes(UserService userService, NotificationService notificationService, NotificationClient notificationClient) {
         this.userService = userService;
         this.notificationService = notificationService;
+        this.notificationClient = notificationClient;
     }
 
     @ModelAttribute("requestURI")
@@ -46,8 +50,11 @@ public class GlobalModelAttributes {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
             String username = auth.getName();
-            List<Notification> notifications = notificationService.getLatestNotifications(username);
-            long unreadCount = notificationService.countUnread(username);
+//            List<Notification> notifications = notificationService.getLatestNotifications(username);
+//            long unreadCount = notificationService.countUnread(username);
+
+            List<NotificationResponse> notifications = notificationClient.getLatestNotifications(username);
+            Long unreadCount = notificationClient.getUnreadCount(username);
 
             model.addAttribute("navbarNotifications", notifications);
             model.addAttribute("navbarUnreadCount", unreadCount);

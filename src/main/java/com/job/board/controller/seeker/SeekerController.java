@@ -4,6 +4,7 @@ import com.job.board.entity.JobApplication;
 import com.job.board.entity.JobSeeker;
 import com.job.board.entity.Notification;
 import com.job.board.entity.User;
+import com.job.board.model.NotificationResponse;
 import com.job.board.service.JobApplicationService;
 import com.job.board.service.NotificationService;
 import com.job.board.service.SeekerService;
@@ -69,7 +70,7 @@ public class SeekerController {
     @GetMapping("/notification")
     public String listNotifications(Model model, Principal principal) {
         String username = principal.getName();
-        List<Notification> notifications = notificationService.getAllNotifications(username);
+        List<NotificationResponse> notifications = notificationService.getAllNotifications(username);
         model.addAttribute("notifications", notifications);
         return "/public/seeker/notification";
     }
