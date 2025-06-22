@@ -72,6 +72,7 @@
                             <th>Applied At</th>
                             <div sec:authorize="hasRole('COMPANY')">
                                 <th>Status</th>
+                                <th>Action</th>
                             </div>
                         </tr>
                         </thead>
@@ -88,19 +89,25 @@
                             </td>
                             <td th:text="${#temporals.format(app.appliedAt, 'yyyy-MM-dd HH:mm')}">2024-01-01</td>
                             <div sec:authorize="hasRole('COMPANY')">
-                            <td>
-                                <form th:action="@{/jobs/applications/update-status}" method="post">
-                                    <input type="hidden" name="applicationId" th:value="${app.id}"/>
-                                    <select name="status" class="form-control form-control-sm">
-                                        <option th:each="status : ${statuses}"
-                                                th:value="${status.name()}"
-                                                th:text="${status.name()}"
-                                                th:selected="${app.applicantStatus.name() == status.name()}">
-                                        </option>
-                                    </select>
-                                    <button type="submit" class="btn btn-sm btn-primary mt-1">Update</button>
-                                </form>
-                            </td>
+                                <td>
+                                    <form th:action="@{/jobs/applications/update-status}" method="post">
+                                        <input type="hidden" name="applicationId" th:value="${app.id}"/>
+                                        <select name="status" class="form-control form-control-sm">
+                                            <option th:each="status : ${statuses}"
+                                                    th:value="${status.name()}"
+                                                    th:text="${status.name()}"
+                                                    th:selected="${app.applicantStatus.name() == status.name()}">
+                                            </option>
+                                        </select>
+                                        <button type="submit" class="btn btn-sm btn-primary mt-1">Update</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <a th:href="@{/company/start-chat/{seekerId}(seekerId=${app.jobSeeker.id})}"
+                                       class="btn btn-sm btn-outline-success">
+                                        Start Chat
+                                    </a>
+                                </td>
                             </div>
                         </tr>
                         </tbody>

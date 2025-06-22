@@ -1,18 +1,13 @@
 package com.job.board.controller.seeker;
 
 import com.job.board.client.NotificationClient;
+import com.job.board.entity.Conversation;
 import com.job.board.entity.JobApplication;
-import com.job.board.entity.JobSeeker;
 import com.job.board.entity.User;
 import com.job.board.model.NotificationResponse;
-import com.job.board.service.JobApplicationService;
-import com.job.board.service.NotificationService;
-import com.job.board.service.SeekerService;
-import com.job.board.service.UserService;
+import com.job.board.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -30,13 +25,15 @@ public class SeekerController {
     private final JobApplicationService jobApplicationService;
     private final NotificationService notificationService;
     private final NotificationClient notificationClient;
+    private final ChatService companyChatService;
 
-    public SeekerController(UserService userService, SeekerService seekerService, JobApplicationService jobApplicationService, NotificationService notificationService, NotificationClient notificationClient) {
+    public SeekerController(UserService userService, SeekerService seekerService, JobApplicationService jobApplicationService, NotificationService notificationService, NotificationClient notificationClient, ChatService companyChatService) {
         this.userService = userService;
         this.seekerService = seekerService;
         this.jobApplicationService = jobApplicationService;
         this.notificationService = notificationService;
         this.notificationClient = notificationClient;
+        this.companyChatService = companyChatService;
     }
 
     @GetMapping("/profile")
@@ -65,7 +62,11 @@ public class SeekerController {
     public String appliedJob(Model model, Principal principal) {
         String username = principal.getName();
         List<JobApplication> applications = jobApplicationService.getJobApplicationsByUsername(username);
+        Long seekerId = seekerService.getCurrentJobSeekerId();
+        List<Conversation> conversations = companyChatService.getSeekerConversation(seekerId);
+
         model.addAttribute("applications", applications);
+        model.addAttribute("conversations", conversations);
         return "/public/seeker/applied-job";
     }
 
@@ -94,10 +95,5 @@ public class SeekerController {
         String username = principal.getName();
         notificationClient.markAllAsRead(username);
         return "redirect:/seeker/notification";
-    }
-
-    @GetMapping("/chat")
-    public String chat() {
-        return "/public/seeker/chat";
     }
 }

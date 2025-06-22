@@ -9,6 +9,8 @@ import com.job.board.repository.SeekerRepository;
 import com.job.board.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,12 +26,14 @@ public class SeekerService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final JobApplicationRepository jobApplicationRepository;
+    private final UserService userService;
 
-    public SeekerService(SeekerRepository seekerRepository, PasswordEncoder passwordEncoder, UserRepository userRepository, JobApplicationRepository jobApplicationRepository) {
+    public SeekerService(SeekerRepository seekerRepository, PasswordEncoder passwordEncoder, UserRepository userRepository, JobApplicationRepository jobApplicationRepository, UserService userService) {
         this.seekerRepository = seekerRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.jobApplicationRepository = jobApplicationRepository;
+        this.userService = userService;
     }
 
     public List<JobSeeker> getAllSeeker() {
@@ -130,5 +134,17 @@ public class SeekerService {
 
     public long getTotalJobSeekers() {
         return seekerRepository.count();
+    }
+
+    public Long getCurrentJobSeekerId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            String username = auth.getName();
+            User user = userService.getUserByUsername(username);
+            if (user != null && user.getJobSeeker() != null) {
+                return user.getJobSeeker().getId();
+            }
+        }
+        return null;
     }
 }

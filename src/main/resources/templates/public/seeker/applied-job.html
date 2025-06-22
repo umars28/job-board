@@ -35,6 +35,13 @@
                             <a th:href="@{'/job/detail/' + ${app.job.id}}" class="btn btn-outline-primary btn-sm">
                                 <i class="bi bi-eye"></i> Lihat Detail
                             </a>
+                            <th:block th:each="conv : ${conversations}">
+                                <a th:if="${conv.companyId == app.job.company.id}"
+                                   th:href="@{'/seeker/open-chat/' + ${app.job.company.id}}"
+                                   class="btn btn-outline-success btn-sm">
+                                    <i class="bi bi-chat"></i> Chat
+                                </a>
+                            </th:block>
                         </div>
                     </div>
                 </div>

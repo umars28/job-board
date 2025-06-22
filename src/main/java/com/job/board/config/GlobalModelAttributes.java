@@ -4,6 +4,7 @@ import com.job.board.client.NotificationClient;
 import com.job.board.entity.User;
 import com.job.board.model.NotificationResponse;
 import com.job.board.service.NotificationService;
+import com.job.board.service.SeekerService;
 import com.job.board.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
@@ -17,13 +18,13 @@ import java.util.List;
 @ControllerAdvice
 public class GlobalModelAttributes {
     private final UserService userService;
-    private final NotificationService notificationService;
     private final NotificationClient notificationClient;
+    private final SeekerService seekerService;
 
-    public GlobalModelAttributes(UserService userService, NotificationService notificationService, NotificationClient notificationClient) {
+    public GlobalModelAttributes(UserService userService, NotificationService notificationService, NotificationClient notificationClient, SeekerService seekerService) {
         this.userService = userService;
-        this.notificationService = notificationService;
         this.notificationClient = notificationClient;
+        this.seekerService = seekerService;
     }
 
     @ModelAttribute("requestURI")
@@ -33,15 +34,7 @@ public class GlobalModelAttributes {
 
     @ModelAttribute("currentJobSeekerId")
     public Long populateCurrentJobSeekerId() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
-            String username = auth.getName();
-            User user = userService.getUserByUsername(username);
-            if (user != null && user.getJobSeeker() != null) {
-                return user.getJobSeeker().getId();
-            }
-        }
-        return null;
+        return seekerService.getCurrentJobSeekerId();
     }
 
     @ModelAttribute
@@ -49,8 +42,6 @@ public class GlobalModelAttributes {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
             String username = auth.getName();
-//            List<Notification> notifications = notificationService.getLatestNotifications(username);
-//            long unreadCount = notificationService.countUnread(username);
 
             List<NotificationResponse> notifications = notificationClient.getLatestNotifications(username);
             Long unreadCount = notificationClient.getUnreadCount(username);
