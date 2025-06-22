@@ -3,7 +3,6 @@ package com.job.board.controller.seeker;
 import com.job.board.client.NotificationClient;
 import com.job.board.entity.JobApplication;
 import com.job.board.entity.JobSeeker;
-import com.job.board.entity.Notification;
 import com.job.board.entity.User;
 import com.job.board.model.NotificationResponse;
 import com.job.board.service.JobApplicationService;

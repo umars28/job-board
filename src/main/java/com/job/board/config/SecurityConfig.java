@@ -20,7 +20,7 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.ignoringRequestMatchers("/elasticsearch/**"))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/","/login", "/css/**","/dev-seeder/**", "/job/list", "/job/detail/**", "/vendor/**", "/js/**", "/elasticsearch/**").permitAll()
+                        .requestMatchers("/","/login", "/css/**","/dev-seeder/**", "/job/list", "/job/detail/**", "/vendor/**", "/js/**", "/elasticsearch/**", "/actuator/**").permitAll()
                         .requestMatchers("/jobs/list", "/dashboard").hasAnyRole("ADMIN", "COMPANY")
                         .requestMatchers("/users/**", "/jobs/category/**", "/jobs/tag/**").hasRole("ADMIN")
                         .requestMatchers("/jobs/create", "/jobs/edit/**", "/jobs/restore/**", "/jobs/archive/**", "/notification/**").hasRole("COMPANY")

@@ -19,15 +19,13 @@ public class JobApplicationService {
     private final UserRepository userRepository;
     private final JobRepository jobRepository;
     private final SeekerRepository seekerRepository;
-    private final NotificationRepository notificationRepository;
     private final NotificationService notificationService;
 
-    public JobApplicationService(JobApplicationRepository jobApplicationRepository, UserRepository userRepository, JobRepository jobRepository, SeekerRepository seekerRepository, NotificationRepository notificationRepository, NotificationService notificationService) {
+    public JobApplicationService(JobApplicationRepository jobApplicationRepository, UserRepository userRepository, JobRepository jobRepository, SeekerRepository seekerRepository, NotificationService notificationService) {
         this.jobApplicationRepository = jobApplicationRepository;
         this.userRepository = userRepository;
         this.jobRepository = jobRepository;
         this.seekerRepository = seekerRepository;
-        this.notificationRepository = notificationRepository;
         this.notificationService = notificationService;
     }
 

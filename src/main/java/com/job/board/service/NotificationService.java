@@ -6,7 +6,6 @@ import com.job.board.enums.ApplicantStatus;
 import com.job.board.enums.JobStatus;
 import com.job.board.model.NotificationPayload;
 import com.job.board.model.NotificationResponse;
-import com.job.board.repository.NotificationRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,12 +17,10 @@ import java.util.List;
 public class NotificationService {
 
     private static final Logger auditLogger = LoggerFactory.getLogger("AUDIT");
-    private final NotificationRepository notificationRepository;
     private final NotificationPublisher notificationPublisher;
     private final NotificationClient notificationClient;
 
-    public NotificationService(NotificationRepository notificationRepository, NotificationPublisher notificationPublisher, NotificationClient notificationClient) {
-        this.notificationRepository = notificationRepository;
+    public NotificationService(NotificationPublisher notificationPublisher, NotificationClient notificationClient) {
         this.notificationPublisher = notificationPublisher;
         this.notificationClient = notificationClient;
     }

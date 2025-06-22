@@ -1,7 +1,6 @@
 package com.job.board.controller.admin;
 
 import com.job.board.client.NotificationClient;
-import com.job.board.entity.Notification;
 import com.job.board.model.NotificationResponse;
 import com.job.board.service.NotificationService;
 import org.slf4j.Logger;
