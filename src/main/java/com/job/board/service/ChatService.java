@@ -44,11 +44,10 @@ public class ChatService {
                         "Conversation not found. The company must start the chat first."
                 ));
 
-        String token = jwtService.generateToken(seekerId, "seeker");
+        String token = jwtService.generateToken(seekerId, "seeker", conversation.getId(), jobId);
 
         return String.format(
-                "http://localhost:8082/chat?conversationId=%s&token=%s",
-                conversation.getId(),
+                "http://localhost:8082/chat?token=%s",
                 token
         );
     }
@@ -66,11 +65,10 @@ public class ChatService {
                     return conversationRepository.save(newConv);
                 });
 
-        String token = jwtService.generateToken(companyId, "company");
+        String token = jwtService.generateToken(companyId, "company", conversation.getId(), jobId);
 
         return String.format(
-                "http://localhost:8082/chat?conversationId=%s&token=%s",
-                conversation.getId(),
+                "http://localhost:8082/chat?token=%s",
                 token
         );
     }

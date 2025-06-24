@@ -36,7 +36,7 @@
                                 <i class="bi bi-eye"></i> Lihat Detail
                             </a>
                             <th:block th:each="conv : ${conversations}">
-                                <a th:if="${conv.companyId == app.job.company.id}"
+                                <a th:if="${conv.companyId == app.job.company.id and conv.jobId == app.job.id}"
                                    th:href="@{'/seeker/open-chat/' + ${app.job.company.id} + '/' + ${app.job.id}}"
                                    class="btn btn-outline-success btn-sm">
                                     <i class="bi bi-chat"></i> Chat
