@@ -16,7 +16,7 @@ public class JwtService {
         this.algorithm = Algorithm.HMAC256("MySuperSecretKey1234567890");
     }
 
-    public String generateToken(Long userId, String role, Long conversationId, Long jobId) {
+    public String generateToken(Long userId, String role, Long conversationId, Long jobId, String displayName) {
         Instant now = Instant.now();
         Instant expiresAt = now.plusSeconds(86400);
 
@@ -27,9 +27,9 @@ public class JwtService {
                 .withClaim("role", role)
                 .withClaim("conversationId", conversationId)
                 .withClaim("jobId", jobId)
+                .withClaim("chatWith", displayName)
                 .withIssuedAt(Date.from(now))
                 .withExpiresAt(Date.from(expiresAt))
                 .sign(algorithm);
     }
 }
-

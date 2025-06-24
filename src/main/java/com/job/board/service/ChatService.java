@@ -3,6 +3,8 @@ package com.job.board.service;
 import com.job.board.entity.Conversation;
 import com.job.board.entity.User;
 import com.job.board.enums.Role;
+import com.job.board.model.CompanyRequest;
+import com.job.board.model.SeekerRequest;
 import com.job.board.repository.ConversationRepository;
 import com.job.board.repository.UserRepository;
 import org.springframework.security.access.AccessDeniedException;
@@ -20,15 +22,17 @@ public class ChatService {
     private final JwtService jwtService;
     private final UserService userService;
     private final SeekerService seekerService;
+    private final CompanyService companyService;
 
     public ChatService(ConversationRepository conversationRepository,
                        UserRepository userRepository,
-                       JwtService jwtService, UserService userService, SeekerService seekerService) {
+                       JwtService jwtService, UserService userService, SeekerService seekerService, CompanyService companyService) {
         this.conversationRepository = conversationRepository;
         this.userRepository = userRepository;
         this.jwtService = jwtService;
         this.userService = userService;
         this.seekerService = seekerService;
+        this.companyService = companyService;
     }
 
     public List<Conversation> getSeekerConversation(Long seekerdId) {
@@ -44,7 +48,8 @@ public class ChatService {
                         "Conversation not found. The company must start the chat first."
                 ));
 
-        String token = jwtService.generateToken(seekerId, "seeker", conversation.getId(), jobId);
+        SeekerRequest seekerRequest = seekerService.getSeekerRequestById(seekerId);
+        String token = jwtService.generateToken(companyId, "seeker", conversation.getId(), jobId, seekerRequest.getFirstName() + " " +seekerRequest.getLastName());
 
         return String.format(
                 "http://localhost:8082/chat?token=%s",
@@ -65,7 +70,8 @@ public class ChatService {
                     return conversationRepository.save(newConv);
                 });
 
-        String token = jwtService.generateToken(companyId, "company", conversation.getId(), jobId);
+        CompanyRequest companyRequest = companyService.getCompanyRequestById(companyId);
+        String token = jwtService.generateToken(companyId, "company", conversation.getId(), jobId, companyRequest.getFirstName() + " " +companyRequest.getLastName());
 
         return String.format(
                 "http://localhost:8082/chat?token=%s",
