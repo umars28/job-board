@@ -25,7 +25,7 @@ public class CompanyChatController {
         this.authUtil = authUtil;
     }
 
-    @GetMapping("/company/start-chat/{seekerId}/{jobId}")
+    @GetMapping("/start-chat/{seekerId}/{jobId}")
     public String startChat(
             @PathVariable Long seekerId,
             @PathVariable Long jobId,
