@@ -23,6 +23,7 @@ public class Conversation {
 
     private Long companyId;
     private Long seekerId;
+    private Long jobId;
 
     private LocalDateTime createdAt = LocalDateTime.now();
 }

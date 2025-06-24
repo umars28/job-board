@@ -103,7 +103,7 @@
                                     </form>
                                 </td>
                                 <td>
-                                    <a th:href="@{/company/start-chat/{seekerId}(seekerId=${app.jobSeeker.id})}"
+                                    <a th:href="@{/company/start-chat/{seekerId}/{jobId}(seekerId=${app.jobSeeker.id}, jobId=${app.job.id})}"
                                        class="btn btn-sm btn-outline-success">
                                         Start Chat
                                     </a>

@@ -35,16 +35,17 @@ public class ChatService {
         return conversationRepository.findBySeekerId(seekerdId);
     }
 
-    public String openChat(Long companyId) {
+    public String openChat(Long companyId, Long jobId) {
         Long seekerId = seekerService.getCurrentJobSeekerId();
 
         Conversation conversation = conversationRepository
-                .findByCompanyIdAndSeekerId(companyId, seekerId)
+                .findByCompanyIdAndSeekerIdAndJobId(companyId, seekerId, jobId)
                 .orElseThrow(() -> new IllegalStateException(
                         "Conversation not found. The company must start the chat first."
                 ));
 
         String token = jwtService.generateToken(seekerId, "seeker");
+
         return String.format(
                 "http://localhost:8082/chat?conversationId=%s&token=%s",
                 conversation.getId(),
@@ -52,15 +53,16 @@ public class ChatService {
         );
     }
 
-    public String startChat(Long seekerId, Principal principal) {
+    public String startChat(Long seekerId, Long jobId, Principal principal) {
         Long companyId = getCompanyIdFromPrincipal(principal);
 
         Conversation conversation = conversationRepository
-                .findByCompanyIdAndSeekerId(companyId, seekerId)
+                .findByCompanyIdAndSeekerIdAndJobId(companyId, seekerId, jobId)
                 .orElseGet(() -> {
                     Conversation newConv = new Conversation();
                     newConv.setCompanyId(companyId);
                     newConv.setSeekerId(seekerId);
+                    newConv.setJobId(jobId);
                     return conversationRepository.save(newConv);
                 });
 

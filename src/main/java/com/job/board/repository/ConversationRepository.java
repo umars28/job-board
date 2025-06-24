@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface ConversationRepository extends JpaRepository<Conversation, Long> {
-    Optional<Conversation> findByCompanyIdAndSeekerId(Long companyId, Long seekerId);
+    Optional<Conversation> findByCompanyIdAndSeekerIdAndJobId(Long companyId, Long seekerId, Long jobId);
 
     List<Conversation> findBySeekerId(Long seekerId);
 }
