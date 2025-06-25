@@ -1,1 +1,1 @@
-![System Architecture](docs/Job Board Architecture.png)
+![System Architecture](docs/Job%20Board%20Architecture.png)
